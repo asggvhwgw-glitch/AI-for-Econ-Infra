@@ -1,0 +1,9 @@
+{
+  "nobs": 10000000,
+  "operation": "split exp kernel + deterministic poisson deviance reduction",
+  "repetitions": 8,
+  "seconds": [0.180, 0.182, 0.179, 0.178, 0.178, 0.178, 0.166, 0.174],
+  "min_seconds": 0.166,
+  "median_seconds": 0.178,
+  "max_seconds": 0.182
+}

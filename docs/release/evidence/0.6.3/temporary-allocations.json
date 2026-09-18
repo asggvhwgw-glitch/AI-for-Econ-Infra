@@ -1,0 +1,45 @@
+{
+  "scope": "tracemalloc after allocating inputs; NumPy-tracked temporaries plus small Python overhead, not full process or FE-pipeline memory",
+  "records": [
+    {
+      "order": "C",
+      "weighted": false,
+      "n": 200000,
+      "rhs": 12,
+      "baseline_tracked_peak_bytes": 19201640,
+      "candidate_tracked_peak_bytes": 1561,
+      "max_abs_result_diff": 0.0,
+      "input_matrices_bytes": 38400000
+    },
+    {
+      "order": "C",
+      "weighted": true,
+      "n": 200000,
+      "rhs": 12,
+      "baseline_tracked_peak_bytes": 19266680,
+      "candidate_tracked_peak_bytes": 1803,
+      "max_abs_result_diff": 0.0,
+      "input_matrices_bytes": 38400000
+    },
+    {
+      "order": "F",
+      "weighted": false,
+      "n": 200000,
+      "rhs": 12,
+      "baseline_tracked_peak_bytes": 19201640,
+      "candidate_tracked_peak_bytes": 1561,
+      "max_abs_result_diff": 6.139089236967266e-12,
+      "input_matrices_bytes": 38400000
+    },
+    {
+      "order": "F",
+      "weighted": true,
+      "n": 200000,
+      "rhs": 12,
+      "baseline_tracked_peak_bytes": 19201640,
+      "candidate_tracked_peak_bytes": 1803,
+      "max_abs_result_diff": 5.6274984672199935e-12,
+      "input_matrices_bytes": 38400000
+    }
+  ]
+}

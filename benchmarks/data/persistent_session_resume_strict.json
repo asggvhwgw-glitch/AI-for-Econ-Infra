@@ -1,0 +1,306 @@
+{
+  "nobs": 220000,
+  "raw_columns": 48,
+  "source_validation": "strict",
+  "cache_bytes_after_workflow": 26766434,
+  "baseline_change_y_new_process": {
+    "inner_seconds": 0.8913100810000003,
+    "params": [
+      -0.251211204595347
+    ],
+    "cache": {
+      "fe_entries": 1,
+      "hits": 0,
+      "misses": 1,
+      "within_columns": 2,
+      "residualize_calls": 1,
+      "residualized_columns": 2,
+      "fe_specs": [
+        [
+          "firm",
+          "year"
+        ]
+      ],
+      "encoded_dataset": {
+        "nobs": 220000,
+        "column_count": 4,
+        "encoded_identifier_count": 2,
+        "numeric_cache_columns": 2,
+        "sample_mask_cache_entries": 0,
+        "encoded_bytes": 5390000,
+        "fingerprint": "0d866448f7cac24763936d326c4efa41",
+        "source_type": "CSVSource"
+      },
+      "data_source": {
+        "source_type": "CSVSource",
+        "materializations": 1,
+        "loaded_column_count": 4
+      }
+    },
+    "process_wall_seconds": 2.722035968
+  },
+  "baseline_add_control_new_process": {
+    "inner_seconds": 0.839912776999995,
+    "params": [
+      -0.2508921522576545,
+      0.15186988030955037
+    ],
+    "cache": {
+      "fe_entries": 1,
+      "hits": 0,
+      "misses": 1,
+      "within_columns": 3,
+      "residualize_calls": 1,
+      "residualized_columns": 3,
+      "fe_specs": [
+        [
+          "firm",
+          "year"
+        ]
+      ],
+      "encoded_dataset": {
+        "nobs": 220000,
+        "column_count": 5,
+        "encoded_identifier_count": 2,
+        "numeric_cache_columns": 3,
+        "sample_mask_cache_entries": 0,
+        "encoded_bytes": 7177500,
+        "fingerprint": "d2954b3461232fd0c77bc662e7ae4d24",
+        "source_type": "CSVSource"
+      },
+      "data_source": {
+        "source_type": "CSVSource",
+        "materializations": 1,
+        "loaded_column_count": 5
+      }
+    },
+    "process_wall_seconds": 2.319203253000012
+  },
+  "persistent_initial_build": {
+    "inner_seconds": 1.268053003999995,
+    "params": [
+      0.5495799991408512
+    ],
+    "persistent": {
+      "source_hashes": 1,
+      "column_hits": 0,
+      "column_misses": 4,
+      "within_hits": 0,
+      "within_misses": 2,
+      "result_hits": 0,
+      "result_misses": 1,
+      "source_validation": "strict"
+    },
+    "cache": {
+      "fe_entries": 1,
+      "hits": 0,
+      "misses": 1,
+      "within_columns": 2,
+      "residualize_calls": 1,
+      "residualized_columns": 2,
+      "fe_specs": [
+        [
+          "firm",
+          "year"
+        ]
+      ],
+      "encoded_dataset": {
+        "nobs": 220000,
+        "column_count": 4,
+        "encoded_identifier_count": 2,
+        "numeric_cache_columns": 2,
+        "sample_mask_cache_entries": 0,
+        "encoded_bytes": 5390000,
+        "fingerprint": "fb9ce63aacd51005a4ad4958f3c9d32a",
+        "source_type": "CSVSource"
+      },
+      "data_source": {
+        "source_type": "CSVSource",
+        "materializations": 1,
+        "loaded_column_count": 4
+      },
+      "persistent_cache": {
+        "source_hashes": 1,
+        "column_hits": 0,
+        "column_misses": 4,
+        "within_hits": 0,
+        "within_misses": 2,
+        "result_hits": 0,
+        "result_misses": 1,
+        "source_validation": "strict"
+      }
+    },
+    "process_wall_seconds": 2.8007402629999945
+  },
+  "persistent_change_y_same_x": {
+    "inner_seconds": 0.9308844459999932,
+    "params": [
+      -0.251211204595347
+    ],
+    "persistent": {
+      "source_hashes": 1,
+      "column_hits": 3,
+      "column_misses": 1,
+      "within_hits": 1,
+      "within_misses": 1,
+      "result_hits": 0,
+      "result_misses": 1,
+      "source_validation": "strict"
+    },
+    "cache": {
+      "fe_entries": 1,
+      "hits": 0,
+      "misses": 1,
+      "within_columns": 2,
+      "residualize_calls": 1,
+      "residualized_columns": 1,
+      "fe_specs": [
+        [
+          "firm",
+          "year"
+        ]
+      ],
+      "encoded_dataset": {
+        "nobs": 220000,
+        "column_count": 4,
+        "encoded_identifier_count": 2,
+        "numeric_cache_columns": 2,
+        "sample_mask_cache_entries": 0,
+        "encoded_bytes": 5390000,
+        "fingerprint": "0d866448f7cac24763936d326c4efa41",
+        "source_type": "CSVSource"
+      },
+      "data_source": {
+        "source_type": "CSVSource",
+        "materializations": 1,
+        "loaded_column_count": 4
+      },
+      "persistent_cache": {
+        "source_hashes": 1,
+        "column_hits": 3,
+        "column_misses": 1,
+        "within_hits": 1,
+        "within_misses": 1,
+        "result_hits": 0,
+        "result_misses": 1,
+        "source_validation": "strict"
+      }
+    },
+    "process_wall_seconds": 2.3681173960000024
+  },
+  "persistent_add_control": {
+    "inner_seconds": 1.0031967100000259,
+    "params": [
+      -0.2508921522576545,
+      0.15186988030955037
+    ],
+    "persistent": {
+      "source_hashes": 1,
+      "column_hits": 4,
+      "column_misses": 1,
+      "within_hits": 2,
+      "within_misses": 1,
+      "result_hits": 0,
+      "result_misses": 1,
+      "source_validation": "strict"
+    },
+    "cache": {
+      "fe_entries": 1,
+      "hits": 0,
+      "misses": 1,
+      "within_columns": 3,
+      "residualize_calls": 1,
+      "residualized_columns": 1,
+      "fe_specs": [
+        [
+          "firm",
+          "year"
+        ]
+      ],
+      "encoded_dataset": {
+        "nobs": 220000,
+        "column_count": 5,
+        "encoded_identifier_count": 2,
+        "numeric_cache_columns": 3,
+        "sample_mask_cache_entries": 0,
+        "encoded_bytes": 7177500,
+        "fingerprint": "d2954b3461232fd0c77bc662e7ae4d24",
+        "source_type": "CSVSource"
+      },
+      "data_source": {
+        "source_type": "CSVSource",
+        "materializations": 1,
+        "loaded_column_count": 5
+      },
+      "persistent_cache": {
+        "source_hashes": 1,
+        "column_hits": 4,
+        "column_misses": 1,
+        "within_hits": 2,
+        "within_misses": 1,
+        "result_hits": 0,
+        "result_misses": 1,
+        "source_validation": "strict"
+      }
+    },
+    "process_wall_seconds": 2.555903992999987
+  },
+  "persistent_exact_resume": {
+    "inner_seconds": 0.28933234100000504,
+    "params": [
+      -0.2508921522576545,
+      0.15186988030955037
+    ],
+    "persistent": {
+      "source_hashes": 1,
+      "column_hits": 5,
+      "column_misses": 0,
+      "within_hits": 0,
+      "within_misses": 0,
+      "result_hits": 1,
+      "result_misses": 0,
+      "source_validation": "strict"
+    },
+    "cache": {
+      "fe_entries": 0,
+      "hits": 0,
+      "misses": 0,
+      "within_columns": 0,
+      "residualize_calls": 0,
+      "residualized_columns": 0,
+      "fe_specs": [],
+      "encoded_dataset": {
+        "nobs": 220000,
+        "column_count": 5,
+        "encoded_identifier_count": 2,
+        "numeric_cache_columns": 0,
+        "sample_mask_cache_entries": 0,
+        "encoded_bytes": 7177500,
+        "fingerprint": "d2954b3461232fd0c77bc662e7ae4d24",
+        "source_type": "CSVSource"
+      },
+      "data_source": {
+        "source_type": "CSVSource",
+        "materializations": 1,
+        "loaded_column_count": 5
+      },
+      "persistent_cache": {
+        "source_hashes": 1,
+        "column_hits": 5,
+        "column_misses": 0,
+        "within_hits": 0,
+        "within_misses": 0,
+        "result_hits": 1,
+        "result_misses": 0,
+        "source_validation": "strict"
+      }
+    },
+    "process_wall_seconds": 1.7302327889999845
+  },
+  "change_y_speedup_vs_baseline_inner": 0.957487349616761,
+  "add_control_speedup_vs_baseline_inner": 0.8372363751073041,
+  "exact_resume_speedup_vs_baseline_inner": 2.902934300731975,
+  "change_y_speedup_vs_baseline_process": 1.1494514472119512,
+  "add_control_speedup_vs_baseline_process": 0.9073905981413065,
+  "exact_resume_speedup_vs_baseline_process": 1.3403995507104176
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "econhdfe"
+  short_description: "Run, validate, visualize, and extend HDFE econometrics"
+  default_prompt: "Use $econhdfe to choose, configure, run, validate, visualize, or extend an econhdfe econometric workflow or codebase."

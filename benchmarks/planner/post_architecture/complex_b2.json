@@ -1,0 +1,102 @@
+{
+  "n": 300000,
+  "nfirm_potential": 16666,
+  "threads": 4,
+  "memory_budget_mb": 512,
+  "dgp_seconds": 0.05453495199981262,
+  "estimate_seconds": 0.8859197060010047,
+  "peak_rss_mib": 323.1171875,
+  "nobs": 300000,
+  "dropped_singletons": 0,
+  "rank": 6,
+  "df_absorbed": 1663,
+  "df_resid": 346.0,
+  "solver": "twoway",
+  "iterations": 23,
+  "requested_fe": [
+    "firm",
+    "year",
+    "region#year",
+    "province#year",
+    "metro#year",
+    "city#year"
+  ],
+  "effective_fe": [
+    "firm",
+    "city#year"
+  ],
+  "n_dropped_fe": 4,
+  "dropped_fe": [
+    {
+      "name": "year",
+      "spanned_by": "city#year",
+      "reason": "nested_intercept",
+      "proof_type": "component_containment"
+    },
+    {
+      "name": "region#year",
+      "spanned_by": "city#year",
+      "reason": "nested_intercept",
+      "proof_type": "exact_mapping"
+    },
+    {
+      "name": "province#year",
+      "spanned_by": "city#year",
+      "reason": "nested_intercept",
+      "proof_type": "exact_mapping"
+    },
+    {
+      "name": "metro#year",
+      "spanned_by": "city#year",
+      "reason": "nested_intercept",
+      "proof_type": "exact_mapping"
+    }
+  ],
+  "active_names": [
+    "x1",
+    "x2",
+    "event_time[-2]#ever_treated",
+    "event_time[0]#ever_treated",
+    "event_time[1]#ever_treated",
+    "event_time[2]#ever_treated"
+  ],
+  "user_omitted": [
+    "xsum",
+    "event_time[-1]#ever_treated"
+  ],
+  "automatic_omitted_count": 1904,
+  "automatic_omitted_sample": [
+    "year_control[0]",
+    "year_control[1]",
+    "year_control[2]",
+    "year_control[3]",
+    "year_control[4]",
+    "year_control[5]",
+    "year_control[6]",
+    "year_control[7]",
+    "year_control[8]",
+    "year_control[9]",
+    "year_control[10]",
+    "year_control[11]",
+    "year_control[12]",
+    "year_control[13]",
+    "year_control[14]",
+    "year_control[15]",
+    "region[0]#year[0]",
+    "region[0]#year[1]",
+    "region[0]#year[2]",
+    "region[0]#year[3]"
+  ],
+  "warnings": [
+    "1904 requested column(s) omitted for collinearity/absorption: year_control[0] (absorbed_by_fe), year_control[1] (absorbed_by_fe), year_control[2] (absorbed_by_fe), year_control[3] (absorbed_by_fe), year_control[4] (absorbed_by_fe), year_control[5] (absorbed_by_fe), year_control[6] (absorbed_by_fe), year_control[7] (absorbed_by_fe), ... (+1896 more)"
+  ],
+  "max_abs_beta_error": 0.013683598673158881,
+  "beta_errors": {
+    "x1": -0.00010010850274055905,
+    "x2": 0.0004643258813629425,
+    "event_time[-2]#ever_treated": -8.471727605920305e-05,
+    "event_time[0]#ever_treated": -0.013683598673158881,
+    "event_time[1]#ever_treated": 0.004098892798848619,
+    "event_time[2]#ever_treated": -0.004158992834217556
+  }
+}

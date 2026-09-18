@@ -1,0 +1,11 @@
+{
+  "nobs": 300000,
+  "engine": "optimized",
+  "base_seconds": 1.6650607230003516,
+  "cold_seconds": 1.2440170560003025,
+  "warm_seconds": 0.973438544999226,
+  "cold_iterations": 6,
+  "warm_iterations": 5,
+  "cold_to_warm_speedup": 1.2779615748637647,
+  "max_abs_coef_diff": 2.7755575615628914e-17
+}

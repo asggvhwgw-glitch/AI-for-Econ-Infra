@@ -1,0 +1,165 @@
+{
+  "release": "0.4.4",
+  "baseline": "0.4.3",
+  "note": "Local integration benchmark on the current container. Direct absorber cases are one post-import run except random200k, which also records a 5-run warmed median; end-to-end complex FE rows are 2-run medians at n=100000. Timings are hardware/environment specific.",
+  "direct_absorber": [
+    {
+      "case": "random200k",
+      "baseline_s": 0.30462580000016715,
+      "updated_s": 0.509533718000057,
+      "speedup": 0.5978520934705505,
+      "updated_criterion": "auto_plain",
+      "updated_peeled": 0,
+      "updated_core_n": 200000
+    },
+    {
+      "case": "gravity200k",
+      "baseline_s": 0.1420706879998761,
+      "updated_s": 0.04820064800014734,
+      "speedup": 2.9474850213516177,
+      "updated_criterion": "auto_plain",
+      "updated_peeled": 0,
+      "updated_core_n": 199712
+    },
+    {
+      "case": "leaf200k",
+      "baseline_s": 0.46908383400000275,
+      "updated_s": 0.05399227699990661,
+      "speedup": 8.687980208740116,
+      "updated_criterion": "core_auto_plain",
+      "updated_peeled": 140000,
+      "updated_core_n": 60000
+    },
+    {
+      "case": "leaf1m_w",
+      "baseline_s": 2.734208322000086,
+      "updated_s": 0.9381287840001278,
+      "speedup": 2.914534090236073,
+      "updated_criterion": "core_auto_plain",
+      "updated_peeled": 700000,
+      "updated_core_n": 300000
+    },
+    {
+      "case": "hier4_200k",
+      "baseline_s": 0.242805528999952,
+      "updated_s": 0.15244870299989088,
+      "speedup": 1.592703146842291,
+      "updated_criterion": "auto_plain",
+      "updated_peeled": 0,
+      "updated_core_n": 200000
+    },
+    {
+      "case": "cycle10k",
+      "baseline_s": 2.9603001560001303,
+      "updated_s": 2.8115550110001095,
+      "speedup": 1.0529049385190974,
+      "updated_criterion": "auto_cg",
+      "updated_peeled": 0,
+      "updated_core_n": 10000
+    },
+    {
+      "case": "weighted500k_k20",
+      "baseline_s": 3.7103166309998414,
+      "updated_s": 0.8790968749997319,
+      "speedup": 4.2206004099388625,
+      "updated_criterion": "auto_plain",
+      "updated_peeled": 0,
+      "updated_core_n": 500000
+    }
+  ],
+  "random200k_warmed_5run": {
+    "baseline": {
+      "median_s": 0.21357779100003427,
+      "criterion": "hestenes",
+      "iterations": 4
+    },
+    "updated": {
+      "median_s": 0.12444501499999205,
+      "criterion": "auto_plain",
+      "iterations": 5
+    },
+    "speedup": 1.7162422375861974
+  },
+  "complex_end_to_end": [
+    {
+      "panel": "stable",
+      "spec": "raw4",
+      "n": 100000,
+      "baseline_s": 1.1068885114999603,
+      "updated_s": 1.0413962255000797,
+      "speedup": 1.06288892200318,
+      "criterion": "schur_pcg_residual",
+      "effective_fe": 2
+    },
+    {
+      "panel": "stable",
+      "spec": "year_interactions",
+      "n": 100000,
+      "baseline_s": 0.09283270349999384,
+      "updated_s": 0.09079882250000537,
+      "speedup": 1.0223998609672318,
+      "criterion": "hestenes",
+      "effective_fe": 3
+    },
+    {
+      "panel": "stable",
+      "spec": "cross4",
+      "n": 100000,
+      "baseline_s": 0.10295691450005506,
+      "updated_s": 0.08892617550009163,
+      "speedup": 1.1577796292380635,
+      "criterion": "hestenes",
+      "effective_fe": 3
+    },
+    {
+      "panel": "stable",
+      "spec": "full7",
+      "n": 100000,
+      "baseline_s": 0.10883446650007045,
+      "updated_s": 0.10791797999991104,
+      "speedup": 1.008492435645665,
+      "criterion": "hestenes",
+      "effective_fe": 3
+    },
+    {
+      "panel": "mobility",
+      "spec": "raw4",
+      "n": 100000,
+      "baseline_s": 0.18608608249996905,
+      "updated_s": 0.19019287800006168,
+      "speedup": 0.978407206708911,
+      "criterion": "hestenes",
+      "effective_fe": 4
+    },
+    {
+      "panel": "mobility",
+      "spec": "year_interactions",
+      "n": 100000,
+      "baseline_s": 0.18220039800007726,
+      "updated_s": 0.1787558745000979,
+      "speedup": 1.0192694282613772,
+      "criterion": "hestenes",
+      "effective_fe": 3
+    },
+    {
+      "panel": "mobility",
+      "spec": "cross4",
+      "n": 100000,
+      "baseline_s": 0.2295604365001509,
+      "updated_s": 0.23420220600007724,
+      "speedup": 0.9801805047902716,
+      "criterion": "hestenes",
+      "effective_fe": 4
+    },
+    {
+      "panel": "mobility",
+      "spec": "full7",
+      "n": 100000,
+      "baseline_s": 0.2531063554999946,
+      "updated_s": 0.24983200899987423,
+      "speedup": 1.0131061928902874,
+      "criterion": "hestenes",
+      "effective_fe": 4
+    }
+  ]
+}

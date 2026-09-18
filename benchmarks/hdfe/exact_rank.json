@@ -1,0 +1,34 @@
+[
+  {
+    "case": "random_5000",
+    "seconds": 0.1645683110000391,
+    "rank": 1498,
+    "unique_edges": 5000,
+    "core_edges": 4998,
+    "core_vertices": 1498
+  },
+  {
+    "case": "random_10000",
+    "seconds": 0.4411990810003772,
+    "rank": 2997,
+    "unique_edges": 10000,
+    "core_edges": 10000,
+    "core_vertices": 2999
+  },
+  {
+    "case": "random_20000",
+    "seconds": 1.6094478989980416,
+    "rank": 5998,
+    "unique_edges": 20000,
+    "core_edges": 19997,
+    "core_vertices": 5997
+  },
+  {
+    "case": "leaf_rich_1m",
+    "seconds": 0.6301732009997068,
+    "rank": 1000000,
+    "unique_edges": 1000000,
+    "core_edges": 0,
+    "core_vertices": 0
+  }
+]

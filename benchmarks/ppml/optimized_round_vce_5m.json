@@ -1,0 +1,8 @@
+{
+  "nobs": 5000000,
+  "regressors": 3,
+  "robust_seconds": 0.44151642299948435,
+  "one_way_cluster_seconds": 0.5901875599993218,
+  "two_way_cluster_seconds": 3.7085371149987623,
+  "peak_rss_mb_process": 875.515625
+}

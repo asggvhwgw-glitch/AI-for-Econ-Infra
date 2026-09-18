@@ -1,0 +1,173 @@
+# Configuration and execution policy
+
+## Contents
+
+- Public configuration objects
+- Solver and degrees-of-freedom policy
+- Runtime-aware parameter tuning
+- Repeated-specification caching
+- Weights, covariance, clustering and failure handling
+
+
+Use this guide when choosing public configuration objects, inference settings, resource limits or numerical execution options.
+
+## Prefer public configuration objects
+
+For advanced control prefer:
+
+```python
+from econhdfe import HDFEConfig, InferenceConfig, ExecutionConfig
+
+hdfe = HDFEConfig(
+    solver="auto",
+    tolerance=1e-8,
+    max_iter=16_000,
+    dof_method="pairwise",
+    canonicalize=True,
+)
+
+inference = InferenceConfig(
+    vce=None,
+    confidence_level=0.95,
+    diagnostics="off",   # off | publication | full
+)
+
+execution = ExecutionConfig(
+    threads="auto",
+    memory_budget_mb=512,
+    profile="off",       # off | summary | full
+    cache="auto",        # auto | on | off
+    cache_validation="signature",
+)
+```
+
+These are strategy-level contracts. Avoid depending on private solver constants or internal thresholds.
+
+## Solver policy
+
+Start with `method="auto"` / `HDFEConfig(solver="auto")` unless a replication or benchmark requires a fixed solver.
+
+- Exactly two effective pure categorical intercept FEs may use the specialized two-way path after canonicalization.
+- General ordinary HDFE starts from the package's MAP/CG planning rules.
+- `lsmr` is a useful fallback for difficult/poorly connected systems and specialized group+individual structures.
+- Do not weaken tolerance solely to make a failing specification return a number.
+
+For heterogeneous slopes use `FixedEffect(..., slopes=...)` rather than materializing large interaction-dummy matrices.
+
+## Direct absorber advanced solver controls
+
+Most empirical users should keep estimator-level `method="auto"` and public strategy configs. Advanced users who construct `HDFEAbsorber` directly can additionally select:
+
+```python
+from econhdfe import HDFEAbsorber
+
+a = HDFEAbsorber(
+    groups,
+    acceleration="auto",        # two-sweep contraction probe, then MAP or CG
+    core_reduction="auto",      # auto | on | off
+    core_min_peel_fraction=0.05,
+    fused_rhs_memory_mb=128,
+)
+```
+
+The direct absorber default remains `acceleration="cg"`; opting into `auto` is an execution choice. Numerical core reduction is eligible only for NumPy, pure-intercept, 3+ categorical FE systems with strictly positive weights. Positive weight changes can reuse the core topology; any zero weight disables the core fast path because the effective numerical topology changes. `auto_plain_limit` and `auto_polish_limit` are advanced numerical limits and should not be tuned in ordinary empirical work without benchmark/accuracy evidence.
+
+Do not interpret solver-core reduction as dropping requested fixed effects for inference. Requested FE topology remains the object used for DoF/nesting/reporting; canonicalization and numerical core reduction are execution transformations only.
+
+## Degrees of freedom
+
+- `dof_method="pairwise"` is the default compatibility-oriented choice.
+- `dof_method="exact"` requests exact structural absorbed DoF for supported multiway intercept-only categorical FE designs.
+- Exact DoF changes inference accounting, not the coefficient projection equation. Hard exact-rank cores can be materially more expensive.
+
+## Runtime-aware parameter tuning
+
+Before overriding automatic parameters, inspect the actual host and actual design. Use effective CPU affinity/cgroup limits and available memory headroom rather than blindly using `os.cpu_count()` or total installed RAM.
+
+Default policy:
+
+```python
+res = olshdfe(
+    ...,
+    method="auto",
+    projection_backend="auto",
+    absorb_threads="auto",
+    pool_size="auto",
+    memory_budget_mb=512,
+)
+```
+
+Tune only after measurement:
+
+1. `absorb_threads`: do not exceed effective CPU capacity. Memory-bandwidth-bound FE projection often stops scaling before the core count.
+2. `memory_budget_mb`: base it on free headroom and leave a safety reserve. It is a scratch-workspace budget, not permission to exhaust RAM.
+3. `pool_size`: leave `auto` unless profiling shows repeated FE traversals dominate and extra workspace is safe.
+4. `projection_backend`: `indexed` can be strong for large reusable categorical groups when index memory is affordable; `fused` is the lower-index-memory fallback.
+5. GPU: use only after confirming compatible CuPy/CUDA and measuring transfer + solve cost on the target device.
+
+Use `ExecutionConfig(profile="summary")` or the corresponding public profile controls when a performance diagnosis is requested.
+
+## Repeated specifications and cache policy
+
+For repeated OLS/IV tables on the same DataFrame use `OLSHDFESession` / `IVHDFESession` so FE encoding and within-transformed columns can be reused.
+
+Keep `cache_validation="signature"` unless the caller guarantees the relevant data are immutable and measured profiling justifies disabling validation. Treat cache correctness as part of the econometric result, not merely an optimization detail.
+
+## Weights
+
+Use an explicit `weight_type` when Stata-compatible semantics matter:
+
+```python
+weight_type="fweight"  # frequency weights
+weight_type="aweight"  # analytic weights
+weight_type="pweight"  # probability weights; robust inference enforced where required
+weight_type="generic"  # generic WLS behavior
+```
+
+Never silently reinterpret one weight type as another. Some estimator/VCE combinations are intentionally rejected when the package cannot support the requested semantics faithfully.
+
+## Covariance and clustering
+
+Use the public `vce`, `cluster`/`clusters`, `time`, `panel`, `bandwidth` and `kernel` controls supported by the chosen estimator. One- and multi-way clustering are distinct inference specifications; do not change them for speed.
+
+Standard one-/multi-way CRV1 is part of estimator covariance. `cluster_diagnostics()` and `wild_cluster_test_ols()` are post-estimation tools: the latter is currently one-way OLS only and must not be substituted for a substantively required multi-way cluster specification.
+
+Diagnostics policy:
+
+- `off`: normal paper-facing path;
+- `publication`: reportable diagnostic subset;
+- `full`: solver/identification detail for validation or debugging.
+
+## Failure handling
+
+If MAP/iterative absorption fails:
+
+1. inspect FE connectivity/canonicalization and omissions;
+2. confirm the specification is identified;
+3. increase iteration budget if convergence is credible but incomplete;
+4. try the documented alternative solver path;
+5. only then consider tolerance changes, with a numerical justification.
+
+OOM: reduce pool/memory pressure or choose a lower-index-memory projection path. CPU scaling stalls: reduce thread count and benchmark. GPU import/device failure: verify the installed CuPy build and actual CUDA runtime/device.
+## PPML / IV-PPML execution resources
+
+For v0.4.5+, `ExecutionConfig` is enforced by PPML and IV-PPML weighted-HDFE projectors rather than merely validated. For a controlled run:
+
+```python
+execution = ExecutionConfig(threads=4, memory_budget_mb=2048, cache="auto")
+r = ppmlhdfe(..., execution_config=execution)
+print(r.diagnostics["execution"])
+print(r.diagnostics["projection_resources"])
+print(r.diagnostics["separation_seconds"])
+print(r.diagnostics["separation_solvers"])
+```
+
+Use `projection_resources["requested_threads"]` and `projection_resources["actual_threads"]` to audit the HDFE projector actually used by the final estimation sample. `memory_budget_mb` controls projector/workspace planning and is not a whole-process RSS cap.
+
+`PPMLConfig(engine="optimized")` now routes simplex separation through the optimized FE plan and ReLU through an optimized MAP/HDFE projector. `engine="replica"` retains the replica-oriented paths. Do not disable `simplex` or `relu` solely because a previous dataset/run found zero additional separated observations: that is an empirical observation, not a general safety certificate. Use FE-only separation only as an explicitly labelled sensitivity/performance experiment.
+
+
+
+## Automatic thread calibration
+
+With `ExecutionConfig(threads="auto")`, econhdfe calibrates a synthetic memory-bound kernel on the real runtime and caches the saturation-point thread count. Explicit integer threads override it. See `planner-feedback.md`.

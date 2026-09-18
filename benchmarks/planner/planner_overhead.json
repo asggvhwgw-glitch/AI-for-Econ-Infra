@@ -1,0 +1,6 @@
+{
+  "calls": 100000,
+  "seconds": 0.9705044809999777,
+  "microseconds_per_plan": 9.705044809999777,
+  "note": "Pure planner overhead microbenchmark; excludes specification analysis and estimator work."
+}

@@ -1,0 +1,285 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs,array,longtable}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{fancyhdr}
+
+\hypersetup{pdftitle={Exact Partition-Refinement Canonicalization and Structural Design Reduction for HDFE Models},pdfauthor={Anonymous technical manuscript}}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Exact Structural Design Reduction for HDFE}
+\fancyhead[R]{Technical Note}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{14pt}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\col}{\operatorname{col}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\1}{\mathbf{1}}
+\lstset{basicstyle=\ttfamily\small,columns=fullflexible,frame=single,breaklines=true,showstringspaces=false}
+
+\title{\textbf{Exact Partition-Refinement Canonicalization and Structural Design Reduction for High-Dimensional Fixed-Effect Models}\\
+\large Functional-dependency certificates before dense dummy materialization}
+\author{Anonymous technical manuscript\\[2pt]\small Implementation reference: \texttt{econhdfe/hdfe/structure.py} and \texttt{econhdfe/design\_structure.py}}
+\date{September 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Empirical specifications with high-dimensional fixed effects (HDFEs), categorical factors, and factor interactions often contain exact linear dependencies that are obvious from the partition structure of the categorical variables but expensive to discover after dense dummy expansion. This note develops an exact structural-reduction framework based on partition refinement and functional-dependency certificates. If categorical partition $Q$ refines partition $P$, then the dummy column space of $P$ is contained in that of $Q$. This elementary identity yields two complementary operations. First, redundant absorbed fixed-effect partitions can be removed from the numerical HDFE system without changing its column space. Second, categorical and factor-interaction regressor blocks can be reduced before materialization: blocks spanned by absorbed effects can be removed entirely, and a fine full-dummy block can drop one basis column per fully represented coarse cell while preserving the joint span. The same results extend to factor-slope blocks sharing a common continuous monomial. Exact component-level functional dependencies are stored in a directed refinement graph; transitive closure allows certified dependencies among higher-order interactions to be inferred without repeated full-data scans. Sampling is used only to reject false candidates; every data-derived direct edge is certified on the full estimation sample. We prove the column-space identities, establish invariance of the fitted model under the reductions, describe the singleton-pruning recertification rule, and map the results to the \texttt{econhdfe} implementation and tests. Partition refinement and functional dependencies are established concepts; the technical contribution is their theorem-backed integration into an HDFE-specific canonicalization and pre-materialization design planner with auditable proof traces.
+\end{abstract}
+
+\paragraph{Review and priority boundary (version 0.6.1).}
+The package review independently checks the proof steps, assumptions and code
+correspondence, supplemented by exact finite examples and numerical oracles.
+This is not a machine-checked formal proof, exhaustive verification of all finite
+inputs, or a certification of historical priority. Established linear algebra,
+singleton elimination, functional dependencies and orthogonal reduction retain
+their prior-art status. The package's framework and implementation may be useful
+without establishing a previously unknown theorem. See the accompanying
+\texttt{mathematical-review-0.6.1.md} for qualifications and regression evidence.
+
+
+
+\noindent\textbf{Keywords:} high-dimensional fixed effects; categorical interactions; design matrices; functional dependencies; partition refinement; collinearity; sparse model compilation.\\
+\textbf{JEL codes:} C01, C13, C63, C87.
+
+\vspace{0.5em}
+\noindent\textbf{Claim boundary.} Functional dependencies and partition refinement are established in database theory and structure-aware learning, and ordinary dummy-variable collinearity is textbook linear algebra. The contribution claimed here is the HDFE-specific exact reduction framework: certified removal of redundant absorbed partitions, exact basis reduction of factor/interaction blocks before dense materialization, transitive reuse of component dependencies, and strict separation of numerical canonicalization from requested inference topology.
+
+\section{Categorical partitions and refinement}
+
+Let a categorical variable induce a partition $P=\{P_1,\dots,P_K\}$ of the estimation rows. Let $D_P\in\{0,1\}^{N\times K}$ be its full one-hot matrix. For two partitions $P$ and $Q$, write $Q\preceq P$ when $Q$ is finer than $P$: every cell of $Q$ is contained in exactly one cell of $P$.
+
+\begin{definition}[Refinement map]
+If $Q\preceq P$, there exists a map $f$ from observed $Q$ levels to observed $P$ levels such that $P(i)=f(Q(i))$ for every estimation row $i$.
+\end{definition}
+
+\begin{lemma}[Dummy-space inclusion]\label{lem:dummy}
+If $Q\preceq P$, then $\col(D_P)\subseteq\col(D_Q)$.
+\end{lemma}
+\begin{proof}
+For each coarse cell $p$, its indicator equals the sum of the indicators of all fine cells $q$ mapped to $p$:
+\[
+  \1\{P=p\}=\sum_{q:f(q)=p}\1\{Q=q\}.
+\]
+Hence every column of $D_P$ is a linear combination of columns of $D_Q$.
+\end{proof}
+
+\begin{corollary}[Equivalent partitions]
+If $P\preceq Q$ and $Q\preceq P$ on the estimation sample, then $\col(D_P)=\col(D_Q)$.
+\end{corollary}
+
+A refinement may be known from the specification itself. For example, the interaction partition \texttt{city\#year} necessarily refines \texttt{year}. Other refinements are empirical functional dependencies: if the estimation sample satisfies \texttt{city -> province}, then \texttt{city\#year} refines \texttt{province\#year}.
+
+\section{Exact canonicalization of absorbed fixed effects}
+
+Suppose the HDFE design contains intercept-only blocks $D_{P_1},\dots,D_{P_G}$. If $P_j$ refines $P_i$, Lemma~\ref{lem:dummy} implies
+\[
+ \col([D_{P_1},\dots,D_{P_i},\dots,D_{P_j},\dots,D_{P_G}])
+ =\col([D_{P_1},\dots,D_{P_j},\dots,D_{P_G}]).
+\]
+Therefore $P_i$ may be removed from the \emph{numerical} absorption system without changing the projection space.
+
+\begin{theorem}[Exact FE partition canonicalization]\label{thm:canon}
+Let $\mathcal P$ be a finite collection of intercept-only categorical FE partitions. Repeatedly remove any partition whose dummy space is contained in another retained partition, using only exact refinement certificates. The resulting maximal collection $\mathcal P^*$ satisfies
+\[
+  \col(D_{\mathcal P})=\col(D_{\mathcal P^*}).
+\]
+Hence every Frisch--Waugh--Lovell residual is unchanged. Coefficients on the unchanged non-FE design are unchanged when its within-transformed columns are identified, or when the same coefficient-selection convention is used for a rank-deficient design.
+\end{theorem}
+\begin{proof}
+Each individual removal preserves the concatenated FE column space by Lemma~\ref{lem:dummy}. Induction over the finite removal sequence gives equality of the initial and final spaces. Orthogonal projection onto equal subspaces is identical, so the within-transformed non-FE variables are unchanged. Under the stated identification or common coefficient-selection condition, the coefficients are unchanged as well.
+\end{proof}
+
+The implementation chooses deterministic parents and retains maximal partitions. This is a normalization choice, not part of the theorem.
+
+\section{Certification pipeline}
+
+A production system should not drop an FE because a small random sample happens to suggest a functional dependency. The implementation therefore uses the following conservative sequence:
+\begin{enumerate}[label=\arabic*.]
+  \item specification proof when interaction-component containment is sufficient;
+  \item level-count filter: a finer partition cannot have fewer observed cells than its coarse target;
+  \item deterministic sample check used only to reject false candidates cheaply;
+  \item full-data mapping scan for every surviving data-derived direct edge.
+\end{enumerate}
+Only steps 1 and 4 can certify a removal. The sample check can save work but can never create a proof.
+
+Singleton pruning can change the estimation sample and thereby create a new exact functional dependency. Consequently, if singleton removal changes the row set, canonicalization is rerun on the final estimation sample. Row deletion preserves every previously certified functional dependency: it cannot create a violating pair. Recertification after deletion discovers additional valid reductions and refreshes coding and active-level metadata; it is not needed to rescue a formerly valid dependency. Adding or replacing rows, in contrast, requires fresh certification.
+
+\section{Structural regressor reduction before materialization}
+
+Consider a full dummy regressor block $D_Q$ and an absorbed FE partition $P$.
+
+\begin{proposition}[Block absorbed by a finer FE]\label{prop:absorb}
+If the absorbed partition $P$ refines regressor partition $Q$, then $\col(D_Q)\subseteq\col(D_P)$ and the full regressor block contributes no identified direction after absorption. It may be omitted before dense materialization.
+\end{proposition}
+This follows directly from Lemma~\ref{lem:dummy}.
+
+The reverse relation produces a different exact reduction.
+
+\begin{proposition}[One fine basis column per represented coarse cell]\label{prop:basis}
+Suppose regressor partition $Q$ refines absorbed partition $P$. In any coarse cell $p$ for which all observed active fine cells are represented, the corresponding absorbed dummy satisfies
+\[
+  \1\{P=p\}=\sum_{q:f(q)=p}\1\{Q=q\}.
+\]
+Therefore, conditional on retaining $D_P$, one arbitrary active fine dummy in that coarse cell may be removed without changing $\col([D_P,D_Q])$.
+\end{proposition}
+\begin{proof}
+Choose fine level $q^*$ in coarse cell $p$. Rearranging the identity gives
+\[
+  \1\{Q=q^*\}=\1\{P=p\}-\sum_{q\ne q^*,\,f(q)=p}\1\{Q=q\}.
+\]
+Thus the removed column is in the span of the retained coarse dummy and the other fine dummies. The reverse containment is trivial, proving equality of the joint spans.
+\end{proof}
+
+The implementation deterministically removes the last active fine cell in each covered coarse cell, preserving earlier user/level order. Any deterministic choice would be algebraically valid.
+
+\section{Common continuous monomials}
+
+Let $m\in\R^N$ be a continuous regressor or continuous monomial shared by two categorical interaction blocks. The factor-slope block for partition $P$ is $\diag(m)D_P$.
+
+\begin{lemma}[Refinement under a shared multiplier]\label{lem:slope}
+If $Q\preceq P$, then
+\[
+  \col(\diag(m)D_P)\subseteq\col(\diag(m)D_Q).
+\]
+\end{lemma}
+\begin{proof}
+Multiply each dummy identity in Lemma~\ref{lem:dummy} elementwise by $m$. The same coefficients express every column of $\diag(m)D_P$ as a linear combination of columns of $\diag(m)D_Q$.
+\end{proof}
+
+Proposition~\ref{prop:basis} also carries over after multiplication by the same $m$, provided the retained coarse columns are multiplied by that same $m$ too. An unmultiplied absorbed dummy does not in general absorb a varying-slope block. This justifies grouping regressor terms by a \emph{continuous signature}: structural reductions are applied only among blocks sharing the same continuous monomial. Reference-coded blocks require care because missing base cells can break the full-sum identity; the implementation therefore tracks active levels explicitly.
+
+\section{Component dependency graph}
+
+High-order interactions can be expensive to compare directly. Let categorical source components be vertices in a directed graph. Use refinement edge $A\rightsquigarrow B$ when partition $B$ refines partition $A$. This stores the pair (coarse, fine), opposite to the conventional functional-dependency arrow $B\to A$. Equivalent partitions can generate directed cycles. The relation is a preorder; only its quotient by mutual determination is a DAG. The implementation computes reachability and does not assume acyclicity.
+
+\begin{lemma}[Transitivity]\label{lem:trans}
+If $B$ refines $A$ and $C$ refines $B$, then $C$ refines $A$.
+\end{lemma}
+\begin{proof}
+Compose the two level maps.
+\end{proof}
+
+The planner certifies nearby direct edges first, then maintains transitive closure. If \texttt{city -> province -> region}, the \texttt{city -> region} relation is inferred without a third full $N$-row mapping scan.
+
+For interaction partitions, if every categorical component of a coarse interaction is determined by components present in a fine interaction, then the fine joint tuple determines the coarse joint tuple.
+
+\begin{proposition}[Component-closure interaction certificate]\label{prop:interaction}
+Let $P$ be an interaction partition generated by components $(A_1,\dots,A_r)$ and $Q$ by $(B_1,\dots,B_s)$. If for every $A_j$ there exists some $B_k$ such that $B_k$ determines $A_j$ through the certified dependency closure (including equality), then $Q$ refines $P$.
+\end{proposition}
+\begin{proof}
+A $Q$ cell fixes the values of all $B_k$. By assumption these values determine every $A_j$, hence fix the entire coarse tuple $(A_1,\dots,A_r)$. Therefore every $Q$ cell is contained in a single $P$ cell.
+\end{proof}
+
+This certificate can prune a high-dimensional interaction block without constructing or rescanning its joint dummy matrix, provided the required component edges have already been exactly certified.
+
+\section{Main invariance result}
+
+\begin{theorem}[Structural design reduction preserves the estimable column space]\label{thm:main}
+Consider a regression specification containing absorbed intercept-only categorical FE blocks, categorical factor blocks, and factor-interaction blocks. Apply only the reductions certified by Theorem~\ref{thm:canon}, Proposition~\ref{prop:absorb}, Proposition~\ref{prop:basis}, Lemma~\ref{lem:slope}, and Proposition~\ref{prop:interaction}, respecting active/reference-coded levels and shared continuous signatures. Then the span of the combined absorbed-plus-regressor design is unchanged. Consequently, fitted values are unchanged. Estimable linear functions are preserved under the induced coefficient reparameterization; equality of individually named coefficients additionally requires a common identified parameterization and compatible reference restrictions. Equality of column spaces alone does not imply equality of arbitrary coefficient coordinates.
+\end{theorem}
+\begin{proof}
+Every transformation either removes a block already contained in a retained span or removes a column explicitly represented as a linear combination of retained columns. Therefore each step preserves the total column space. Composition of finitely many span-preserving steps preserves the final span.
+\end{proof}
+
+The planner intentionally does not attempt arbitrary collective multi-block rank reasoning. Dependencies not proven structurally fall through to post-absorption numerical rank resolution. This conservative boundary prevents symbolic overreach.
+
+\section{Relationship to prior work}
+
+Functional dependencies are a standard concept in relational database theory, and structure-aware learning systems have used schema/query dependencies to reduce the cost of statistical learning. In particular, \citet{AboKhamis2017} develops regression and other learning algorithms that exploit functional dependencies over relational data. HDFE software such as \texttt{reghdfe} already accepts factor interactions and performs numerical collinearity handling. The present framework does not claim those ingredients as new.
+
+The HDFE-specific technical contribution is the exact compilation layer joining these ideas: FE column-space canonicalization; sample-certified functional dependencies; basis reduction of full factor and factor-slope interaction blocks before dense materialization; component-graph closure reused across interactions; recertification after singleton pruning; and an auditable proof trace that keeps requested inference topology distinct from the canonical numerical solver topology.
+
+\section{Implementation correspondence}
+
+\begin{center}
+\begin{tabular}{p{0.34\linewidth}p{0.56\linewidth}}
+\toprule
+Mathematical object & Implementation / validation \\
+\midrule
+FE refinement certification & \texttt{econhdfe/hdfe/structure.py} \\
+FE canonicalization & \texttt{canonicalize\_fixed\_effects} \\
+Structural term representation & \texttt{econhdfe/design\_structure.py::StructuralTerm} \\
+Fine/coarse basis reduction & \texttt{\_coverage\_spans\_coarse}, \texttt{\_drop\_one\_fine\_per\_covered\_coarse} \\
+Component dependency closure & \texttt{\_component\_dependency\_closure} \\
+Structural plan & \texttt{plan\_structural\_collinearity} \\
+FE canonicalization tests & \texttt{tests/test\_fe\_canonicalization.py}, \texttt{tests/test\_v07.py} \\
+Structural design tests & \texttt{tests/test\_v073\_structural\_collinearity.py} \\
+Dependency-closure tests & \texttt{tests/test\_v074\_dependency\_omission.py} \\
+Stress evidence & \texttt{benchmarks/bench\_structural\_collinearity.py}, \texttt{benchmarks/bench\_dependency\_dag.py} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Examples}
+
+If \texttt{city -> province} on the final estimation sample, then
+\[
+ \texttt{city\#year} \preceq \texttt{province\#year} \preceq \texttt{year}
+\]
+in the refinement sense (the leftmost partition is finest). Thus an absorbed system requesting
+\[
+ \texttt{firm + year + province\#year + city\#year}
+\]
+can be numerically canonicalized to
+\[
+ \texttt{firm + city\#year}
+\]
+without changing the FE projection space.
+
+As a regressor example, if \texttt{year} is absorbed and a full \texttt{quarter\#year} dummy block is requested, then within each year the quarter-year indicators sum to the absorbed year dummy. One quarter-year basis column per fully represented year can be removed before building the dense design.
+
+For a factor-slope example, if $x$ is included as a main effect and the model also requests all $Q$ columns $\1\{q=j\}x$, then
+\[
+ x = \sum_{j=1}^{Q} \1\{q=j\}x.
+\]
+One column can be removed from the later block according to user order while preserving the span.
+
+\section{Complexity}
+
+A direct refinement check between dense-coded partitions is $O(N+K_{\text{fine}})$ time and $O(K_{\text{fine}})$ memory. The deterministic sample stage is rejection-only and can avoid many full checks in unrelated high-dimensional partitions. The component dependency graph may reduce the number of full scans from all candidate pairs toward the number needed to establish a sparse hierarchy, because transitive relations are inferred algebraically.
+
+The principal memory benefit of structural design reduction is avoiding materialization of redundant $N\times K$ factor blocks. This can dominate the planner cost for large interactions. Exact speedups are specification dependent and are benchmarked separately from the algebraic claims.
+
+\section{Limitations}
+
+The current planner is deliberately incomplete. It does not solve arbitrary symbolic rank among several simultaneously dependent blocks; it uses pairwise/refinement identities and sends unresolved dependencies to a numerical Gram-rank resolver after HDFE absorption. Heterogeneous-slope absorbed FE terms are not removed wholesale by the FE canonicalizer because intercept retention can affect numerical conditioning and because their column spaces are not described by pure partition refinement alone. Functional dependencies are sample-specific: row deletion preserves existing dependencies but can create new ones, while adding or replacing rows requires recertification. Specification-derived certificates trust the internally generated component metadata; arbitrary external metadata is not an independent proof. Finally, the framework proves column-space equivalence, not statistical validity of a substantive specification.
+
+\section{Conclusion}
+
+Exact partition-refinement certificates provide a useful compilation layer between user-facing HDFE specifications and numerical estimation. They allow redundant FE partitions to be removed, factor and interaction blocks to be basis-reduced before materialization, and certified component dependencies to be reused transitively. The resulting model has the same combined column space as the requested design while using a smaller numerical representation. The underlying algebra is elementary; the technical contribution lies in a conservative, auditable HDFE-specific framework that turns the algebra into exact pre-materialization reductions without conflating numerical canonicalization with inference topology.
+
+\begin{thebibliography}{99}
+\bibitem[Abo Khamis et al.(2017)]{AboKhamis2017}
+Abo Khamis, M., Ngo, H. Q., Nguyen, X. L., Olteanu, D., and Schleich, M. (2017). Learning models over relational data using sparse tensors and functional dependencies. arXiv:1703.04780.
+
+\bibitem[Correia(2017)]{Correia2017}
+Correia, S. (2017). Linear models with high-dimensional fixed effects: An efficient and feasible estimator. Working paper. \url{https://scorreia.com/research/hdfe.pdf}.
+
+\bibitem[Correia and Constantine(2026)]{CorreiaConstantine2026}
+Correia, S. and Constantine, N. (2026). \texttt{reghdfe}: Stata module for linear and instrumental-variable/GMM regression absorbing multiple levels of fixed effects. \url{https://github.com/sergiocorreia/reghdfe}.
+
+\bibitem[Gaure(2013)]{Gaure2013}
+Gaure, S. (2013). OLS with multiple high dimensional category variables. \emph{Computational Statistics \& Data Analysis}, 66:8--18.
+
+\bibitem[Guimar\~aes and Portugal(2010)]{GuimaraesPortugal2010}
+Guimar\~aes, P. and Portugal, P. (2010). A simple feasible procedure to fit models with high-dimensional fixed effects. \emph{The Stata Journal}, 10(4):628--649.
+\end{thebibliography}
+\end{document}

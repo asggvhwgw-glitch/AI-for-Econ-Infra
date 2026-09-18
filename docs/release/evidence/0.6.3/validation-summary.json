@@ -1,0 +1,79 @@
+{
+  "release_version": "0.6.3",
+  "delivery_type": "local candidate; not formal release",
+  "baseline": {
+    "version": "0.6.2",
+    "passed": 807,
+    "failed": 0,
+    "skipped": 0
+  },
+  "worktree": {
+    "passed": 906,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 10
+  },
+  "added_tests": {
+    "reduction_projection": 52,
+    "execution_thread_tooling": 47
+  },
+  "installed_host_dependency_subset": {
+    "passed": 350,
+    "failed": 0,
+    "skipped": 0,
+    "extra_fusion_cases": 52
+  },
+  "previous_full_attempt": {
+    "passed": 905,
+    "failed": 1,
+    "reason": "Generated architecture inventory preceded added files; refreshed inventory, no assertion change."
+  },
+  "external_or_unavailable": {
+    "clean-install-attempt": {
+      "execution": {
+        "command": [
+          "python",
+          "scripts/verify_clean_install.py",
+          "--wheel",
+          "<BUILD_DIR>/econhdfe-0.6.3-py3-none-any.whl"
+        ],
+        "cwd": "<BUILD_DIR>/econhdfe-0.6.3",
+        "returncode": 1,
+        "elapsed_seconds": 2.3819146156311035
+      },
+      "output": "WARNING: The directory '<HOME>/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.\nProcessing <BUILD_DIR>/econhdfe-0.6.3-py3-none-any.whl\nINFO: pip is looking at multiple versions of econhdfe to determine which version is compatible with other requirements. This could take a while.\nERROR: Could not find a version that satisfies the requirement numpy>=1.26 (from econhdfe) (from versions: none)\nERROR: No matching distribution found for numpy>=1.26\nTraceback (most recent call last):\n  File \"<BUILD_DIR>/econhdfe-0.6.3/scripts/verify_clean_install.py\", line 77, in <module>\n    main()\n    ~~~~^^\n  File \"<BUILD_DIR>/econhdfe-0.6.3/scripts/verify_clean_install.py\", line 61, in main\n    subprocess.run(install, cwd=temp, env=env, check=True)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.13/subprocess.py\", line 577, in run\n    raise CalledProcessError(retcode, process.args,\n                             output=stdout, stderr=stderr)\nsubprocess.CalledProcessError: Command '['<TMPDIR>/econhdfe-clean/venv/bin/python', '-m', 'pip', 'install', '<BUILD_DIR>/econhdfe-0.6.3-py3-none-any.whl']' returned non-zero exit status 1.\n"
+    },
+    "isolated-build-attempt": {
+      "execution": {
+        "command": [
+          "python",
+          "-m",
+          "build",
+          "--sdist",
+          "--wheel",
+          "--outdir",
+          "<BUILD_DIR>"
+        ],
+        "cwd": "<BUILD_DIR>/econhdfe-0.6.3",
+        "returncode": 1,
+        "elapsed_seconds": 0.5916931629180908
+      },
+      "output": "<PYTHON_PREFIX>/bin/python: No module named build.__main__; 'build' is a package and cannot be directly executed\n"
+    },
+    "build_prerequisites_download": {
+      "exit": 1,
+      "output": "WARNING: The directory '<HOME>/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.\nERROR: Could not find a version that satisfies the requirement build (from versions: none)\nERROR: No matching distribution found for build\n"
+    },
+    "pypi_dns": {
+      "exit": 6,
+      "output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\n  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0\n  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0\n  0     0    0     0    0     0      0      0 --:--:--  0:00:04 --:--:--     0\n  0     0    0     0    0     0      0      0 --:--:--  0:00:05 --:--:--     0curl: (6) Could not resolve host: pypi.org\n"
+    }
+  },
+  "note": "Archive retests/final checksums are recorded in the outer release evidence after assembling immutable artifacts, not inferred from this in-source summary.",
+  "redaction": {
+    "applied": "2026-09-18",
+    "reason": "The public-repository copy must not disclose the local build-environment filesystem layout.",
+    "changes": "Absolute build-environment path prefixes were replaced by the placeholders <HOME>, <BUILD_DIR>, <PYTHON_PREFIX> and <TMPDIR>. Captured commands, return codes, elapsed times, error text and all recorded pass/fail/skip counts are otherwise unchanged.",
+    "unredacted_location": "The unmodified record remains inside econhdfe-v0.6.3-release-bundle.zip and econhdfe-v0.6.3-source.zip."
+  }
+}

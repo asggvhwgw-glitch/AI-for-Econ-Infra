@@ -1,0 +1,29 @@
+{
+  "record_date": "2026-09-12",
+  "source": "user-supplied local real-machine benchmark",
+  "source_files": {
+    "benchmark_complete_table_20260912.md": "beff646b1bae86c0e19450677169838abf964282148c6cbe7b0efbebb88733db",
+    "mobility_ppml_speedup_diagnosis_20260912.md": "d4abaf861f7d7127c06b8db7ee686555a8db2db568773dccb0cdd78c947f1ff4"
+  },
+  "package_version_recorded_by_source": null,
+  "status": {
+    "linear_ols_iv_complex_fe": "external real-world evidence",
+    "ppml": "pre-0.4.5 baseline; rerun required after execution/separation fixes"
+  },
+  "ppml_caveat": "The supplied diagnosis establishes that the direct PPML API did not propagate ExecutionConfig threads/memory policy into its projector. PPML timings are preserved as observed historical results but must not be relabeled as a strict configured-thread benchmark.",
+  "immutability": "The two supplied Markdown records are archived verbatim in the release bundle; the public-repository copies are redacted as recorded below. Add follow-up runs as new files rather than overwriting existing records.",
+  "public_release_redaction": {
+    "applied": "2026-09-18",
+    "reason": "The public repository copy must not disclose local machine paths, the local account name, or the identity of the confidential empirical projects that supplied the data.",
+    "changes": [
+      "mobility_ppml_speedup_diagnosis_20260912.md: absolute local installation paths in four Markdown links were rewritten as in-package relative module references (econhdfe/models/ppml/api.py:53, econhdfe/hdfe/weighted_projection.py:22, econhdfe/models/ppml/separation_simplex.py:136, econhdfe/models/ppml/separation_relu.py:33).",
+      "benchmark_complete_table_20260912.md: the two confidential dataset/project labels were replaced by the neutral identifiers Project-A and Project-B."
+    ],
+    "not_changed": "All measured timings, sample sizes, iteration counts, separation counts, coefficient values, section structure and caveats are unchanged. The redacted text describes only local path prefixes and dataset labels; no numeric evidence was altered.",
+    "public_copy_sha256": {
+      "benchmark_complete_table_20260912.md": "988587917bb900492cd66abc5dcfb51d992be65813fcb4aae851c359b8372fef",
+      "mobility_ppml_speedup_diagnosis_20260912.md": "72a7895d111f66874fc4cbf3e9da661aa8f30af6c41865f80814ff11b2ae7817"
+    },
+    "original_verbatim_location": "The untouched originals remain the copies inside econhdfe-v0.6.3-release-bundle.zip and econhdfe-v0.6.3-source.zip, whose hashes are recorded under source_files above."
+  }
+}

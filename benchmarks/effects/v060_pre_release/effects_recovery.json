@@ -1,0 +1,37 @@
+{
+  "host_note": "same v0.6 pre-release container; BLAS/OpenMP=1; NUMBA=4",
+  "linear_akm": {
+    "n_raw": 200000,
+    "n_final_rows": 196360,
+    "dropped_singletons": 3640,
+    "n_worker_recovered": 45457,
+    "n_firm_recovered": 5000,
+    "median_recovery_s": 0.10972608199972456,
+    "max_reconstruction_error": 5.328182339781051e-11,
+    "level_coefficients": 50457,
+    "normalization_complete": true
+  },
+  "ppml_origin_destination": {
+    "n_raw": 40000,
+    "n_final": 40000,
+    "n_origin": 800,
+    "n_destination": 700,
+    "median_recovery_s": 0.01519276099952549,
+    "reconstruction_error": 2.3379067886693755e-11,
+    "level_coefficients": 1500,
+    "normalization_complete": true,
+    "n_separated": 0,
+    "n_singletons": 0
+  },
+  "max_rss_kib_process": 267336,
+  "partial_component_salvage": {
+    "n_components": 1000,
+    "n_obs": 7995,
+    "n_identified_components": 999,
+    "n_unidentified_components": 1,
+    "global_extra_nullity": 1,
+    "median_recovery_and_localization_s": 0.7144612719999941,
+    "n_recovered_obs": 7992,
+    "bad_block_coefficients_nan": true
+  }
+}

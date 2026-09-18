@@ -1,0 +1,13 @@
+{
+  "scenario": "two_way",
+  "engine": "optimized",
+  "nobs": 5000000,
+  "regressors": 2,
+  "vce": "robust",
+  "seconds_estimator": 19.22640056599994,
+  "iterations": 6,
+  "peak_rss_mb_process": 1358.140625,
+  "coef": [0.11974739562186065, -0.07910301241065265],
+  "dgp_beta": [0.12, -0.08],
+  "epsilon": 7.214816225630692e-16
+}

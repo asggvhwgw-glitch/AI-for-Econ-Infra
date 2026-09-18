@@ -1,0 +1,31 @@
+{
+  "status": "local_microbenchmark_not_large_scale_certification",
+  "n": 50000,
+  "k_ols": 12,
+  "repeats": 5,
+  "seed": 61061,
+  "blas_threads": 1,
+  "results": {
+    "OLS_IID": {
+      "original_seconds": 0.021743081000067832,
+      "revised_seconds": 0.05587611300006756,
+      "ratio": 2.5698341923066583,
+      "max_beta_error": 3.4416913763379853e-15,
+      "max_vcov_error": 6.776263578034403e-20
+    },
+    "OLS_robust": {
+      "original_seconds": 0.02284164699995017,
+      "revised_seconds": 0.05156194500000311,
+      "ratio": 2.25736546056051,
+      "max_beta_error": 3.4416913763379853e-15,
+      "max_vcov_error": 1.3552527156068805e-19
+    },
+    "IV_2SLS_robust": {
+      "original_seconds": 0.08312665599987668,
+      "revised_seconds": 0.20995901800006322,
+      "ratio": 2.5257724549917504,
+      "max_beta_error": 1.9984014443252818e-15,
+      "max_vcov_error": 2.405573570202213e-19
+    }
+  }
+}

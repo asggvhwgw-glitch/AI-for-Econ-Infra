@@ -1,0 +1,45 @@
+{
+  "ppml_python_expected": {
+    "max_coef_abs_diff": 7.105427357601002e-15,
+    "max_se_abs_diff": 3.820401208276536e-06,
+    "n_equal": true,
+    "separation_equal": true,
+    "dfa_equal": false,
+    "dfa_mismatches": [
+      {
+        "model": "m03_two_fe_cluster",
+        "term": "x1",
+        "df_a_expected": 20,
+        "df_a_current": 19
+      },
+      {
+        "model": "m03_two_fe_cluster",
+        "term": "x2",
+        "df_a_expected": 20,
+        "df_a_current": 19
+      },
+      {
+        "model": "m04_three_fe_2cluster",
+        "term": "x1",
+        "df_a_expected": 17,
+        "df_a_current": 16
+      },
+      {
+        "model": "m04_three_fe_2cluster",
+        "term": "x2",
+        "df_a_expected": 17,
+        "df_a_current": 16
+      }
+    ],
+    "note": "The absorbed-DoF mismatch predates planner checkpoint 1 and is due to the stored Python fixture using the older FE-rank convention."
+  },
+  "ivppml_python_expected": {
+    "max_coef_abs_diff": 2.7755575615628914e-16,
+    "max_se_abs_diff": 9.367506770274758e-17,
+    "max_vcov_abs_diff": 8.581460195222768e-17,
+    "n_equal": true,
+    "dfa_equal": true,
+    "separation_equal": true,
+    "mu_separation_equal": true
+  }
+}

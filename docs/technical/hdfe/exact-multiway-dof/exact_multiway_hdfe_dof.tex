@@ -1,0 +1,654 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs,array,longtable}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+
+\hypersetup{
+  pdftitle={Exact Structural Degrees of Freedom for Multiway High-Dimensional Categorical Fixed Effects},
+  pdfauthor={Anonymous technical manuscript}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Exact Multiway HDFE Degrees of Freedom}
+\fancyhead[R]{Technical Note}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{14pt}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\col}{\operatorname{col}}
+\newcommand{\1}{\mathbf{1}}
+\newcommand{\EE}{\mathcal{E}}
+\newcommand{\VV}{\mathcal{V}}
+\newcommand{\HH}{\mathcal{H}}
+\newcommand{\cD}{\mathcal{D}}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  showstringspaces=false
+}
+
+\title{\textbf{Exact Structural Degrees of Freedom for Multiway High-Dimensional Categorical Fixed Effects}\\
+\large A rank-theoretic and hypergraph reduction approach for arbitrary numbers of fixed-effect partitions}
+\author{Anonymous technical manuscript\\[2pt]\small Implementation reference: \texttt{econhdfe/hdfe}, exactdof2 prototype}
+\date{September 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+High-dimensional fixed-effect (HDFE) estimators can absorb an arbitrary number of categorical effects, but exact accounting of the degrees of freedom consumed by three or more fixed-effect partitions is not generally available in widely used HDFE software. Current \texttt{reghdfe} documentation, for example, describes exact graph-theoretic accounting for the first two fixed effects and a conservative pairwise approximation thereafter. This note develops a general exact formulation for intercept-only categorical HDFE designs. The absorbed structural degrees of freedom are the rank, over characteristic zero, of the concatenated dummy matrix. After duplicate observation patterns are removed, this matrix is the edge--vertex incidence matrix of a multipartite uniform hypergraph. We establish a sequence of rank-preserving reductions: component decomposition, exact degree-one peeling, removal of the universal block-sum dependencies, and a sufficient ``proper connectivity'' certificate that yields rank in closed form. Residual cores are certified by finite-field rank whenever the finite-field lower bound reaches a deterministic characteristic-zero upper bound; otherwise an exact integer/rational backend is invoked. The resulting procedure is exact for any finite number of categorical fixed-effect partitions, contains the standard two-way connected-component formula as a special case, and separates mathematical identification from numerical projection of fixed effects. We also give a minimal three-way counterexample showing why pairwise connected-component information is insufficient in general. The note states the assumptions, proofs, computational complexity, implementation correspondence, and scope limitations needed for a reproducible software implementation.
+\end{abstract}
+
+\paragraph{Review and priority boundary (version 0.6.1).}
+The package review independently checks the proof steps, assumptions and code
+correspondence, supplemented by exact finite examples and numerical oracles.
+This is not a machine-checked formal proof, exhaustive verification of all finite
+inputs, or a certification of historical priority. Established linear algebra,
+singleton elimination, functional dependencies and orthogonal reduction retain
+their prior-art status. The package's framework and implementation may be useful
+without establishing a previously unknown theorem. See the accompanying
+\texttt{mathematical-review-0.6.1.md} for qualifications and regression evidence.
+
+
+
+\noindent\textbf{Keywords:} high-dimensional fixed effects; degrees of freedom; categorical effects; hypergraph incidence matrix; matrix rank; exact linear algebra; finite fields.\\
+\textbf{JEL codes:} C01, C13, C63, C87.
+
+\vspace{0.75em}
+\noindent\textbf{Claim boundary.} The results below concern the structural rank of \emph{intercept-only categorical} fixed-effect blocks. Heterogeneous slopes, continuous interactions, cluster-nesting conventions used in small-sample variance corrections, and convergence of the numerical HDFE projection solver are separate issues unless explicitly stated otherwise.
+
+\paragraph{Terminology and input contract (0.6.1 review).}
+Here ``structural rank'' means the actual characteristic-zero rank of the specified
+zero--one categorical design, not the generic rank of its sparsity pattern.
+For the complete $2\times2$ two-way design the latter is four but the actual rank
+is three. Observed levels only are counted; a declared dense coding must be a
+finite nonnegative integer coding with no unobserved holes. A full-rank
+proper-connectivity certificate is sufficient, not necessary. These distinctions
+are covered by exact-arithmetic regression tests in the 0.6.1 review.
+
+\section{Introduction}
+
+Large administrative and panel datasets routinely motivate linear and nonlinear models with several high-dimensional categorical fixed effects. Computational methods for partialling out these effects are by now well developed; prominent contributions include \citet{GuimaraesPortugal2010}, \citet{Gaure2013}, and \citet{Correia2017}. For two fixed-effect partitions, graph connectivity gives an exact characterization of the number of linearly independent fixed-effect coefficients; this insight is central in matched worker--firm models such as \citet{AbowdCreecyKramarz2002}. Estimation with three or more fixed effects is also computationally feasible, but degrees-of-freedom accounting is more delicate. Guimar\~aes's \texttt{group3hdfe} provides a dedicated exact procedure for three HDFEs \citep{Guimaraes2016group3hdfe}, whereas current \texttt{reghdfe} documentation continues to describe the general problem beyond two fixed effects as open and uses pairwise connected-component calculations as a conservative approximation \citep{CorreiaConstantine2026reghdfe}.
+
+This note takes a deliberately algebraic view. The object of interest is not an informal count of dummy coefficients but the dimension of the fixed-effect column space. For categorical intercept effects, that dimension is exactly the rank of the concatenated dummy matrix. Once repeated fixed-effect tuples are removed, the same matrix can be interpreted as the edge--vertex incidence matrix of a multipartite, uniform hypergraph. This representation makes it possible to combine graph reductions and exact linear algebra without changing the estimand.
+
+The contribution is therefore primarily a general computational framework rather than a claim that the rank identity itself is novel. The framework has four features. First, it applies to an arbitrary finite number of categorical fixed-effect partitions. Second, every structural simplification is accompanied by a rank identity, so preprocessing cannot change the answer. Third, finite-field computation is used only as a \emph{certificate}: a modular rank is accepted only when it attains a deterministic upper bound on the characteristic-zero rank. Fourth, difficult residual cores fall back to exact integer/rational linear algebra, avoiding floating-point rank tolerances.
+
+The theory below also clarifies why a purely pairwise method cannot be exact in general. With three or more partitions, the design is a hypergraph incidence problem. Two designs can have the same pairwise connectivity information but different collective linear dependencies. Exact accounting must therefore inspect the joint incidence structure, not only its pairwise projections.
+
+\section{Model and target quantity}
+
+Consider the linear model
+\begin{equation}
+  y = X\beta + \sum_{g=1}^{G} D_g\alpha_g + \varepsilon,
+  \label{eq:model}
+\end{equation}
+where $D_g\in\{0,1\}^{N\times K_g}$ is the one-hot design matrix for the $g$th categorical fixed-effect partition. Every observation belongs to exactly one observed level in each partition. Let
+\begin{equation}
+  D = [D_1\;D_2\;\cdots\;D_G], \qquad K=\sum_{g=1}^{G}K_g.
+\end{equation}
+A separate constant, if supplied, lies in the column span of every nonempty complete dummy block and therefore does not enlarge the fixed-effect span.
+
+\begin{assumption}[Observed-level coding]\label{ass:observed}
+Each $D_g$ contains columns only for levels observed in the estimation sample. If integer level codes are passed to an implementation under a ``dense-code'' contract, the codes are a permutation of $\{0,\ldots,K_g-1\}$.
+\end{assumption}
+
+\begin{definition}[Structural absorbed degrees of freedom]
+The structural degrees of freedom absorbed by the categorical fixed effects are
+\begin{equation}
+  d_a^{\mathrm{struct}} := \dim\col(D)=\rank_{\R}(D).
+\end{equation}
+\end{definition}
+
+This definition is the natural parameter-space dimension consumed by the fixed-effect design. Regression packages can apply additional inference conventions---for example, treating a fixed effect nested in a cluster variable as costless for a particular small-sample cluster correction. Such conventions alter an inference adjustment, not the structural rank derived here.
+
+\begin{lemma}[Characteristic-zero equivalence]\label{lem:RQ}
+For the integer matrix $D$,
+\begin{equation}
+  \rank_{\R}(D)=\rank_{\Q}(D).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+The rank of a matrix over a field equals the largest order of a nonzero minor. Every minor of $D$ is an integer. An integer determinant is zero in $\R$ if and only if it is zero in $\Q$. Hence the largest nonzero minor has the same order over both fields.
+\end{proof}
+
+Thus exact DoF computation is an exact rational/integer rank problem; no numerical rank tolerance is required.
+
+\subsection{Prefix ranks and blockwise redundancy}
+
+Some software reports the contribution of each fixed-effect block sequentially. Define
+\begin{equation}
+  R_j = \rank_{\Q}([D_1,\ldots,D_j]), \qquad R_0=0.
+\end{equation}
+The incremental dimension of block $j$ is $\Delta_j=R_j-R_{j-1}$. Its exact redundancy count, under this ordering, is
+\begin{equation}
+  M_j = K_j-\Delta_j.
+  \label{eq:Mj}
+\end{equation}
+Then
+\begin{equation}
+  \sum_{j=1}^{G}(K_j-M_j)=\sum_{j=1}^{G}\Delta_j=R_G=d_a^{\mathrm{struct}}.
+\end{equation}
+The allocation $(M_1,\ldots,M_G)$ depends on block order, but the total $R_G$ does not.
+
+\section{Hypergraph representation}
+
+For observation $i$, write its fixed-effect tuple as
+\begin{equation}
+  e_i=(v_{i1},\ldots,v_{iG}), \qquad v_{ig}\in V_g,
+\end{equation}
+where $V_g$ is the set of observed levels in partition $g$. Let $\VV=\dot\bigcup_{g=1}^{G}V_g$ be the disjoint union of all fixed-effect levels. Every observation defines a hyperedge containing exactly one vertex from each $V_g$. Hence the fixed-effect design is naturally associated with a $G$-partite, $G$-uniform hypergraph
+\begin{equation}
+  \HH=(\VV,\EE).
+\end{equation}
+After duplicate tuples are removed, the resulting edge--vertex incidence matrix $A\in\{0,1\}^{|\EE|\times |\VV|}$ is exactly the matrix of unique rows of $D$.
+
+\begin{lemma}[Duplicate-edge reduction]\label{lem:dedup}
+Deleting repeated fixed-effect tuples does not change rank. If $A$ contains one copy of each distinct row of $D$, then
+\begin{equation}
+  \rank(D)=\rank(A).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Repeated rows do not enlarge the row space. The row spaces of $D$ and $A$ are therefore identical.
+\end{proof}
+
+This reduction can be substantial in large panels because $N$ may be much larger than the number $E=|\EE|$ of unique fixed-effect tuples.
+
+\section{Exact structural reductions}
+
+\subsection{Connected-component decomposition}
+
+Use ordinary incidence connectivity: two vertices are in the same component if they can be linked by a sequence of hyperedges with nonempty intersections. Because every edge contains one vertex from each partition, every nonempty incidence component contains at least one vertex from every partition.
+
+\begin{lemma}[Component additivity]\label{lem:components}
+Suppose $\HH$ has incidence-connected components $\HH_1,\ldots,\HH_C$, with corresponding incidence submatrices $A_1,\ldots,A_C$. Then
+\begin{equation}
+  \rank(A)=\sum_{c=1}^{C}\rank(A_c).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Permute rows by edge component and columns by vertex component. No edge in one component is incident to a vertex in another, so the permuted matrix is block diagonal. The rank of a block-diagonal matrix is the sum of the block ranks.
+\end{proof}
+
+\subsection{Degree-one peeling}
+
+A vertex has active degree one if it occurs in exactly one active unique hyperedge.
+
+\begin{lemma}[Exact leaf elimination]\label{lem:peel}
+Let $A$ be an incidence matrix and suppose column $v$ contains exactly one nonzero entry, located in row $e$. Let $A'$ be obtained by deleting row $e$ and column $v$. Then
+\begin{equation}
+  \rank(A)=1+\rank(A').
+  \label{eq:peel}
+\end{equation}
+Consequently, recursively peeling a degree-one vertex together with its unique incident edge contributes exactly one unit of rank per peeled edge.
+\end{lemma}
+
+\begin{proof}
+After permuting row $e$ and column $v$ to the first positions,
+\begin{equation}
+  A=\begin{bmatrix}1&r'\\0&A'\end{bmatrix}.
+\end{equation}
+The first row is linearly independent of all remaining rows because it is the only row with a nonzero entry in the first column. The remaining row rank equals $\rank(A')$.
+\end{proof}
+
+\begin{remark}
+The relevant degree is degree in the \emph{unique-edge} hypergraph, not the raw observation count. A fixed-effect level can appear in thousands of observations but still be a degree-one vertex after all those observations collapse to one repeated fixed-effect tuple.
+\end{remark}
+
+Repeated application of Lemma~\ref{lem:peel} produces a residual $2$-core-like hypergraph in which each active vertex has degree at least two. If $P$ edges are peeled and $A_{\mathrm{core}}$ denotes the residual incidence matrix, then
+\begin{equation}
+  \rank(A)=P+\rank(A_{\mathrm{core}}).
+  \label{eq:peelcore}
+\end{equation}
+
+\subsection{Universal block-sum dependencies}
+
+Consider one nonempty incidence-connected component with $E_c$ edges and $V_c$ vertices. Let $V_{cg}$ be its vertices in partition $g$, and let $s_g\in\{0,1\}^{V_c}$ indicate the columns belonging to partition $g$. Because every row has exactly one entry equal to one in every partition,
+\begin{equation}
+  A_c s_g=\1_{E_c}, \qquad g=1,\ldots,G.
+\end{equation}
+Therefore
+\begin{equation}
+  A_c(s_g-s_1)=0, \qquad g=2,\ldots,G.
+\end{equation}
+The $G-1$ vectors $s_g-s_1$ are linearly independent because the partition supports are disjoint.
+
+\begin{proposition}[Deterministic multipartite upper bound]\label{prop:upper}
+For every nonempty connected $G$-partite, $G$-uniform incidence component,
+\begin{equation}
+  \rank(A_c)\le U_c:=\min\{E_c,\,V_c-G+1\}.
+  \label{eq:upper}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+The row count gives $\rank(A_c)\le E_c$. The $G-1$ independent null vectors above imply column nullity at least $G-1$, hence $\rank(A_c)\le V_c-(G-1)=V_c-G+1$.
+\end{proof}
+
+\begin{lemma}[Exact column reduction]\label{lem:blockdrop}
+Within a nonempty component, choose one arbitrary column $b_g\in V_{cg}$ from each partition $g=2,\ldots,G$. Deleting these $G-1$ columns does not change the column span or rank.
+\end{lemma}
+
+\begin{proof}
+For every $g\ge2$,
+\begin{equation}
+  d_{g,b_g}
+  =\sum_{v\in V_{c1}}d_{1,v}
+   -\sum_{v\in V_{cg}\setminus\{b_g\}}d_{g,v},
+\end{equation}
+where $d_{g,v}$ denotes the incidence column of vertex $v$. Thus every deleted column is an exact linear combination of retained columns.
+\end{proof}
+
+This reduction leaves exactly $V_c-G+1$ columns, which is the non-row-count part of the upper bound in \eqref{eq:upper}.
+
+\section{A structural full-rank certificate}
+
+The implementation contains a particularly cheap structural certificate. Define two hyperedges to be \emph{one-coordinate adjacent} if they share exactly $G-1$ vertices, equivalently if their fixed-effect tuples differ in one coordinate only. Let $L(\HH_c)$ be the graph whose nodes are hyperedges and whose edges join one-coordinate-adjacent hyperedges.
+
+\begin{definition}[Proper edge connectivity]
+A residual component is properly edge-connected if $L(\HH_c)$ is connected.
+\end{definition}
+
+\begin{proposition}[Proper-connectivity rank formula]\label{prop:proper}
+If a nonempty $G$-partite, $G$-uniform component is properly edge-connected, then
+\begin{equation}
+  \rank_{\Q}(A_c)=V_c-G+1.
+  \label{eq:properrank}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Fix a root hyperedge $e^0=(v^0_1,\ldots,v^0_G)$. For any vertex $v\in V_{cg}$, choose an edge $e$ containing $v$. Proper edge connectivity provides a path
+\begin{equation}
+  e^0=e^{(0)},e^{(1)},\ldots,e^{(m)}=e
+\end{equation}
+where consecutive edges differ in exactly one coordinate. If step $t$ changes partition $h$, then the difference between the two incidence rows is
+\begin{equation}
+  a_{e^{(t)}}-a_{e^{(t-1)}}=\mathbf e_{v^{(t)}_h}-\mathbf e_{v^{(t-1)}_h},
+\end{equation}
+which is a within-partition contrast and belongs to the row space of $A_c$. Summing only the path steps that change coordinate $g$ telescopes to
+\begin{equation}
+  \mathbf e_v-\mathbf e_{v^0_g}.
+\end{equation}
+Hence the row space contains, for every partition $g$, all $|V_{cg}|-1$ contrasts relative to the root vertex. Across partitions these give $V_c-G$ linearly independent vectors. The root row $a_{e^0}$ is independent of their span because every within-partition contrast has coordinate sum zero within each partition, whereas $a_{e^0}$ has coordinate sum one in each partition. Thus
+\begin{equation}
+  \rank(A_c)\ge (V_c-G)+1=V_c-G+1.
+\end{equation}
+Proposition~\ref{prop:upper} gives the reverse inequality.
+\end{proof}
+
+\begin{remark}
+This proposition is proved directly for the condition implemented in the software. It does not require importing a stronger or differently defined hypergraph ``proper connectivity'' theorem. Related incidence-rank phenomena are studied more broadly in the hypergraph literature; see, for example, \citet{Parui2025}.
+\end{remark}
+
+\section{Finite-field certificates and exact fallback}
+
+Structural reductions do not always determine the rank of a residual core. The remaining task is exact rank computation. The key computational observation is that modular rank supplies a rigorous lower bound on rational rank.
+
+\begin{lemma}[Finite-field lower bound]\label{lem:finitefield}
+Let $B$ be an integer matrix and $p$ a prime. Then
+\begin{equation}
+  \rank_{\F_p}(B\bmod p)\le \rank_{\Q}(B).
+  \label{eq:fplower}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+If $\rank_{\F_p}(B)=r$, then some $r\times r$ minor has determinant nonzero modulo $p$. The same determinant, viewed as an integer, is therefore nonzero. Hence the corresponding minor is nonzero over $\Q$, implying $\rank_{\Q}(B)\ge r$.
+\end{proof}
+
+\begin{theorem}[Exact modular certificate]\label{thm:certificate}
+Let $U$ be any deterministic upper bound on $\rank_{\Q}(B)$. If, for some prime $p$,
+\begin{equation}
+  \rank_{\F_p}(B\bmod p)=U,
+\end{equation}
+then
+\begin{equation}
+  \rank_{\Q}(B)=U.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:finitefield},
+\begin{equation}
+  U=\rank_{\F_p}(B\bmod p)\le\rank_{\Q}(B)\le U.
+\end{equation}
+All inequalities must therefore hold with equality.
+\end{proof}
+
+The implementation first uses $p=2$ because rows are sparse binary incidence vectors and can be represented efficiently as machine-independent bitsets using integer XOR. Crucially, a shortfall over $\F_2$ is \emph{not} interpreted as the answer. Rank can fall after reduction modulo a prime. If the $\F_2$ pass fails to reach the upper bound, the algorithm proceeds to another exact backend.
+
+A second large-prime modular pass can play the same certification role. If it also fails to attain the upper bound, the implementation computes characteristic-zero rank exactly, either through an external exact algebra package or through a native rational/integer elimination routine. SymPy's \texttt{DomainMatrix} supports exact sparse domains \citep{SymPyDomainMatrix2026}; FLINT provides compiled exact integer matrix rank, although its \texttt{fmpz\_mat} representation is dense and therefore requires a memory guard \citep{FLINT2026}.
+
+\begin{remark}[No Monte Carlo acceptance rule]
+The algorithm never accepts a modular rank merely because the prime is ``large.'' A modular result is final only when it meets a deterministic characteristic-zero upper bound. Otherwise the fallback computes rank over $\Q$ (or an exact integer domain with the same characteristic-zero rank). Therefore unlucky primes affect speed, not correctness.
+\end{remark}
+
+\section{Main exactness theorem}
+
+We can now state the complete result implemented by the categorical rank engine.
+
+\begin{theorem}[Exact arbitrary-$G$ categorical HDFE rank]\label{thm:main}
+Under Assumption~\ref{ass:observed}, consider any finite intercept-only categorical fixed-effect design with $G\ge1$ partitions. Apply the following operations:
+\begin{enumerate}[label=(\roman*)]
+  \item remove duplicate fixed-effect tuples;
+  \item recursively peel degree-one vertices and their unique incident edges, adding one to the rank count per peeled edge;
+  \item decompose the residual incidence hypergraph into connected components;
+  \item within each residual component, use either the proper-connectivity formula of Proposition~\ref{prop:proper}, a finite-field certificate that attains the upper bound in Proposition~\ref{prop:upper}, or an exact characteristic-zero rank backend.
+\end{enumerate}
+If every fallback rank computation terminates, the returned value equals
+\begin{equation}
+  d_a^{\mathrm{struct}}=\rank_{\R}(D).
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:dedup} preserves the initial rank. Every peeling step satisfies the exact recursion in Lemma~\ref{lem:peel}; after $P$ steps the original rank is $P$ plus residual-core rank. Lemma~\ref{lem:components} makes the residual-core rank additive across components. For each component, Proposition~\ref{prop:proper} is exact when its structural condition holds. Otherwise, Theorem~\ref{thm:certificate} is exact whenever a modular rank reaches the deterministic upper bound, and by construction the remaining fallback computes the characteristic-zero rank exactly. Summing all exact contributions yields $\rank_{\Q}(D)$, which equals $\rank_{\R}(D)$ by Lemma~\ref{lem:RQ}.
+\end{proof}
+
+\section{Relationship to the standard two-way result}
+
+For $G=2$, every connected component is an ordinary bipartite graph. A connected graph with at least one edge has a connected edge-adjacency (line) graph, so Proposition~\ref{prop:proper} gives rank $V_c-1$ for each component. Summing over $C$ components yields the familiar formula.
+
+\begin{corollary}[Two-way connected-component formula]\label{cor:twoway}
+Let $D=[D_1,D_2]$ contain $K_1+K_2$ observed dummy columns and let the associated bipartite graph have $C$ connected components. Then
+\begin{equation}
+  \rank(D)=K_1+K_2-C.
+  \label{eq:twoway}
+\end{equation}
+\end{corollary}
+
+This is the graph-theoretic result used in two-way matched-effects applications such as \citet{AbowdCreecyKramarz2002} and in HDFE software. Thus the general rank engine does not replace the standard two-way theory with a different definition; it contains that theory as a special case.
+
+\section{Why pairwise connectivity is insufficient for three or more fixed effects}
+
+The failure of pairwise methods is easiest to see in a small example. Consider three partitions $A$, $B$, and $C$ with levels
+\begin{equation*}
+  A=\{A_0,A_1\},\qquad B=\{B_0,B_1\},\qquad C=\{C_0,C_1,C_2\},
+\end{equation*}
+and five unique tuples
+\begin{align*}
+ &(A_0,B_0,C_0),\quad (A_0,B_0,C_1),\quad (A_0,B_1,C_2),\\
+ &(A_1,B_1,C_0),\quad (A_1,B_1,C_1).
+\end{align*}
+The associated incidence matrix, with columns ordered $(A_0,A_1,B_0,B_1,C_0,C_1,C_2)$, is
+\begin{equation}
+A=\begin{bmatrix}
+1&0&1&0&1&0&0\\
+1&0&1&0&0&1&0\\
+1&0&0&1&0&0&1\\
+0&1&0&1&1&0&0\\
+0&1&0&1&0&1&0
+\end{bmatrix}.
+\label{eq:countermatrix}
+\end{equation}
+All three pairwise projections $A$--$B$, $A$--$C$, and $B$--$C$ are connected. A pairwise mobility-group rule therefore identifies only the universal normalization-type redundancies and yields an absorbed-DoF count of five in the common sequential accounting. Direct exact rank gives
+\begin{equation}
+  \rank_{\Q}(A)=4.
+\end{equation}
+There is one additional collective three-way dependency invisible to pairwise connectivity. For example, the row vector
+\begin{equation}
+  (1,-1,0,-1,1)'
+\end{equation}
+annihilates $A$ on the left. Equivalently, the full design has three independent column-null relations rather than only the two universal block-sum relations.
+
+This example is not a pathology of floating-point arithmetic. It is an exact integer-rank difference. Therefore no algorithm that observes only pairwise connected-component counts can, in general, recover the full multiway rank.
+
+\section{Algorithmic specification}
+
+For clarity, the exact categorical rank routine can be summarized as follows.
+
+\begin{center}
+\fbox{\begin{minipage}{0.92\textwidth}
+\textbf{Algorithm 1: Certified exact categorical HDFE rank}
+\begin{enumerate}[leftmargin=1.8em,itemsep=2pt,topsep=3pt]
+  \item Dense-factorize observed levels within each FE partition.
+  \item Replace repeated FE tuples by one unique hyperedge.
+  \item Repeatedly peel any degree-one vertex and its unique incident edge; accumulate one rank unit per peeled edge.
+  \item If no residual edge remains, return the accumulated rank.
+  \item Split the residual hypergraph into incidence-connected components.
+  \item For each component, set $U=\min(E_c,V_c-G+1)$.
+  \item If one-coordinate edge adjacency is connected, add $V_c-G+1$.
+  \item Otherwise remove $G-1$ universal block-sum columns, preserving rank.
+  \item Attempt a GF(2) bitset rank. If it reaches $U$, add $U$.
+  \item Otherwise invoke an exact fallback: bounded dense FLINT, sparse SymPy \texttt{DomainMatrix}, or native exact modular/rational elimination. Add its exact rank.
+  \item Return peeled rank plus the sum of residual component ranks.
+\end{enumerate}
+\end{minipage}}
+\end{center}
+
+The order among exact fallback backends is an engineering choice and does not affect the mathematical result.
+
+\section{Computational complexity and scaling}
+
+Let $N$ be the number of estimation observations, $E$ the number of unique fixed-effect tuples, $V=\sum_g K_g$ the number of observed levels, and $G$ the number of fixed-effect partitions.
+
+\paragraph{Tuple deduplication.}
+A sort/unique implementation requires approximately $O(N\log N)$ comparison work in the generic case, or lower practical cost when tuples can be packed into integer keys. Hash-based alternatives can achieve expected linear time. The crucial output size is $E$, not $N$.
+
+\paragraph{Peeling.}
+With linked incidence lists, degree-one peeling is $O(GE+V)$ because every edge--vertex incidence is processed a constant number of times.
+
+\paragraph{Component decomposition.}
+Union--find over vertices touched by each edge requires $O(GE\,\alpha(V))$ amortized time, where $\alpha$ is the inverse Ackermann function.
+
+\paragraph{Proper-connectivity test.}
+A straightforward implementation forms signatures obtained by omitting one coordinate at a time and groups equal signatures. With sorting/unique operations, this is roughly $O(GE\log E)$ in the worst case, though vectorized implementations have favorable constants.
+
+\paragraph{GF(2) certificate.}
+Bitset elimination is sparse in rows but can densify algebraically. Practical implementations therefore impose work budgets. Because a failure to reach $U$ is never accepted as final, early termination under a work budget affects performance only, not correctness.
+
+\paragraph{Exact fallback.}
+Worst-case exact elimination can be cubic in the smaller matrix dimension and can suffer fill-in and integer growth. This is the remaining hard regime: a very large irreducible core whose characteristic-zero rank lies below the structural upper bound and for which a cheap finite-field pass does not certify the answer. Compiled sparse black-box methods such as Wiedemann-type algorithms are natural future backends for this case, but are not required for correctness of Algorithm~1.
+
+\section{Implementation correspondence}
+
+Table~\ref{tab:code} maps the mathematical claims to the audited \texttt{econhdfe/hdfe/rank.py} prototype. This table is included to make the software theorem auditable: every rank-changing code path should correspond to an explicit result above.
+
+\begin{table}[htbp]
+\centering
+\caption{Mathematical result and implementation correspondence}
+\label{tab:code}
+\begin{tabular}{p{0.34\textwidth}p{0.33\textwidth}p{0.25\textwidth}}
+\toprule
+Mathematical operation & Implementation routine & Justification \\
+\midrule
+Remove duplicate tuples & \texttt{\_unique\_edge\_indices} & Lemma~\ref{lem:dedup} \\
+Create disjoint vertex ids & \texttt{\_global\_edges} & Representation only \\
+Degree-one elimination & \texttt{\_peel\_degree\_one} & Lemma~\ref{lem:peel} \\
+Residual component split & \texttt{\_component\_edge\_lists} & Lemma~\ref{lem:components} \\
+One-coordinate connectivity & \texttt{\_properly\_connected} & Proposition~\ref{prop:proper} \\
+Drop $G-1$ block columns & \texttt{\_reduced\_component\_rows} & Lemma~\ref{lem:blockdrop} \\
+GF(2) bitset certificate & \texttt{\_gf2\_bitset\_rank} & Theorem~\ref{thm:certificate} \\
+Large-prime sparse certificate & \texttt{\_modular\_sparse\_rank} & Theorem~\ref{thm:certificate} \\
+Sparse exact fallback & \texttt{\_sympy\_sparse\_rank} & Exact characteristic-zero rank \\
+Dense compiled fallback & \texttt{\_flint\_dense\_rank} & Exact integer rank \\
+Dependency-free fallback & \texttt{\_rational\_sparse\_rank} & Exact row operations over $\Q$ \\
+Top-level orchestration & \texttt{categorical\_rank} & Theorem~\ref{thm:main} \\
+Prefix allocation & \texttt{categorical\_prefix\_ranks} & Equation~\eqref{eq:Mj} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Backend safety}
+
+Two implementation details are mathematically important.
+
+First, the GF(2) routine may stop early when a preset XOR budget is exhausted. The partial rank then remains only a lower bound and is discarded unless it has already reached $U$. Thus the budget cannot generate a false rank.
+
+Second, the FLINT backend is guarded by a maximum dense-cell count because \texttt{fmpz\_mat} is a dense integer matrix representation \citep{FLINT2026}. Refusing a too-large dense conversion is a resource decision, not a change in the algebraic answer; another exact backend is then used.
+
+\section{Validation strategy}
+
+Formal proof establishes correctness of the algorithmic transformations, but implementation errors remain possible. The prototype was therefore checked against direct exact rank on small designs. The validation suite associated with the audited module revision includes:
+\begin{enumerate}[label=(\alph*)]
+  \item the three-FE counterexample in Section~8, whose exact rank is four;
+  \item exhaustive enumeration of all $255$ nonempty subsets of the $2\times2\times2$ three-way hyperedge universe, compared with exact rational rank;
+  \item random small three- and four-FE designs compared with exact rational elimination;
+  \item a deliberately chosen matrix for which $\rank_{\F_2}<\rank_{\Q}$, verifying that GF(2) shortfall triggers fallback rather than an incorrect answer;
+  \item a one-million-observation leaf-rich design verifying that duplicate reduction and peeling operate on topology rather than raw sample size;
+  \item backend dispatch checks for the optional exact libraries.
+\end{enumerate}
+These tests are implementation evidence, not substitutes for the theorems above.
+
+\section{Interaction with HDFE estimation and inference}
+
+The exact rank engine is conceptually separate from the numerical operation that residualizes $y$ and $X$ with respect to $D$. Alternating projections, conjugate-gradient acceleration, LSMR, or other HDFE solvers can all compute the same projection onto $\col(D)$ while using different numerical algorithms \citep{GuimaraesPortugal2010,Gaure2013,Correia2017}. The present results concern only the dimension of that column space.
+
+Similarly, positive observation weights do not alter structural rank: if $W$ is diagonal with strictly positive entries, $W^{1/2}$ is invertible and
+\begin{equation}
+  \rank(W^{1/2}D)=\rank(D).
+\end{equation}
+Zero-weight observations should be removed before constructing the estimation-sample design.
+
+Cluster-robust small-sample corrections require additional conventions. In particular, \texttt{reghdfe} treats fixed effects nested within clustering variables specially when computing reported absorbed DoF \citep{CorreiaConstantine2026reghdfe}. Such nesting adjustments should be applied \emph{after} or around the structural rank engine according to the desired inference convention; they are not statements about the rank of $D$ itself.
+
+\section{Scope limitations}
+
+The main theorem deliberately does not cover the following cases without additional analysis.
+
+\begin{enumerate}[label=(\roman*)]
+  \item \textbf{Heterogeneous slopes.} Columns such as $1\{g=k\}x$ are not binary incidence columns. Their redundancies can depend on realized continuous values and require separate structural or exact numerical rank analysis.
+  \item \textbf{Multi-membership/group--individual designs.} If an observation can contain multiple members from the same conceptual fixed-effect block, the matrix remains sparse and exact-rank methods still apply, but it is no longer a $G$-partite $G$-uniform incidence matrix. The upper bound and proper-connectivity certificate must be modified.
+  \item \textbf{Solver convergence.} Exact DoF does not prove convergence or accuracy of the HDFE projection algorithm.
+  \item \textbf{Cluster and finite-sample inference conventions.} These are software/statistical choices layered on top of structural rank.
+  \item \textbf{Extremely large deficient residual cores.} The result remains exact, but runtime can be dominated by the characteristic-zero fallback. A sparse compiled black-box rank backend would improve this regime without changing the theory.
+\end{enumerate}
+
+\section{Discussion}
+
+The central simplification is conceptual: multiway categorical HDFE degrees of freedom are a matrix-rank problem. Two-way graph connectivity solves a special case because the bipartite incidence matrix has a simple rank formula. For three or more partitions, pairwise graphs discard joint incidence information and can miss collective dependencies. Treating the design as a multipartite hypergraph preserves the complete structure while enabling aggressive exact reductions before any general-purpose linear algebra is attempted.
+
+The resulting design principle is conservative in the numerical sense but not in the statistical count: use topology to prove as much rank as possible, use finite fields only for one-sided certificates, and invoke characteristic-zero exact arithmetic whenever certification fails. There is no floating-point tolerance whose choice can change the reported structural DoF.
+
+From a software-engineering perspective, this also argues for keeping the rank engine modular. The same categorical rank kernel can be used by OLS, IV, PPML, or other estimators that absorb the same categorical column space. Solver optimizations such as canonicalization may simplify the numerical plan, but inference should retain a clearly defined requested-design representation so that purely computational rewrites do not silently change degrees-of-freedom conventions.
+
+\section{Conclusion}
+
+For intercept-only categorical fixed effects, exact absorbed structural degrees of freedom with any finite number of partitions are computable as the characteristic-zero rank of the concatenated dummy design. The hypergraph representation yields a practical exact algorithm: deduplicate tuples, peel degree-one incidences, decompose components, exploit universal multipartite dependencies, certify full attainable rank structurally or over finite fields, and fall back to exact characteristic-zero elimination only for the genuinely difficult residual cores.
+
+This framework recovers the standard two-way connected-component formula, exposes why pairwise connectivity is not sufficient from three fixed effects onward, and provides a theorem-by-theorem correspondence to an implementable HDFE rank engine. The remaining challenge is primarily computational---accelerating exact rank on very large, genuinely deficient irreducible cores---rather than identifying the mathematical target.
+
+\appendix
+
+\section{Additional algebra for the three-way counterexample}
+
+For the matrix in \eqref{eq:countermatrix}, three independent column-null vectors are
+\begin{align*}
+ z_1 &= (-1,-1,1,1,0,0,0)',\\
+ z_2 &= (0,-1,-1,0,1,1,0)',\\
+ z_3 &= (-1,0,1,0,0,0,1)'.
+\end{align*}
+Therefore nullity is at least three and rank is at most $7-3=4$. The first, second, third, and fourth rows, for example, contain four independent directions, so rank equals four. Two of these null relations can be generated from the universal equality of block sums; the third is a collective dependency specific to the realized three-way incidence structure.
+
+\section{Correctness of the native rational fallback}
+
+The dependency-free fallback performs sparse row elimination using integer cross-multiplication. Suppose a current row has pivot coefficient $a$ in column $c$ and the stored pivot row has coefficient $b\neq0$. Replacing the current row by
+\begin{equation}
+  \frac{b}{\gcd(|a|,|b|)}r
+  -\frac{a}{\gcd(|a|,|b|)}p
+\end{equation}
+zeros column $c$ and is an exact rational elementary-row operation up to multiplication by a nonzero scalar. Dividing a resulting integer row by the gcd of all its entries and normalizing its sign also multiplies that row by a nonzero rational scalar. None of these operations changes row rank. Thus the number of pivots produced after exact elimination equals $\rank_{\Q}$.
+
+\section{Why a modular shortfall is not informative enough}
+
+It is possible for a matrix to have lower rank over $\F_p$ than over $\Q$ because a nonzero integer minor can become zero modulo $p$. A simple example is
+\begin{equation*}
+  B=\begin{bmatrix}1&1\\1&-1\end{bmatrix}.
+\end{equation*}
+Over $\Q$, $\det(B)=-2$ and the rank is two. Modulo two the two rows coincide and the rank is one. This is why Algorithm~1 accepts finite-field computation only when it reaches an independent upper bound. The same logic applies to the GF(2) bitset pass in the implementation.
+
+\section{Reproducibility notes}
+
+The audited prototype corresponding to this note exposes the following public-level operations:
+\begin{lstlisting}[language=Python]
+categorical_rank(groups, backend="auto", return_info=False)
+categorical_prefix_ranks(groups, backend="auto")
+available_rank_backends()
+\end{lstlisting}
+The exact path uses no floating-point matrix-rank call. Optional backends are not required for correctness: they replace only the characteristic-zero fallback and can therefore affect speed without changing the target or the certification logic.
+
+\begin{thebibliography}{99}
+
+\bibitem[Abowd et al.(2002)]{AbowdCreecyKramarz2002}
+Abowd, J. M., Creecy, R. H., and Kramarz, F. (2002).
+\newblock Computing person and firm effects using linked longitudinal employer--employee data.
+\newblock Technical Paper TP-2002-06, U.S. Census Bureau, Center for Economic Studies.
+
+\bibitem[Correia(2017)]{Correia2017}
+Correia, S. (2017).
+\newblock Linear models with high-dimensional fixed effects: An efficient and feasible estimator.
+\newblock Working paper. \url{https://scorreia.com/research/hdfe.pdf}.
+
+\bibitem[Correia and Constantine(2026)]{CorreiaConstantine2026reghdfe}
+Correia, S. and Constantine, N. (2026).
+\newblock \texttt{reghdfe}: Stata module for linear and instrumental-variable/GMM regression absorbing multiple levels of fixed effects.
+\newblock Statistical Software Components S457874, Boston College Department of Economics; version 6.13.1 documentation and source repository. \url{https://github.com/sergiocorreia/reghdfe}.
+
+\bibitem[Correia et al.(2020)]{CorreiaGuimaraesZylkin2020}
+Correia, S., Guimar\~aes, P., and Zylkin, T. (2020).
+\newblock Fast Poisson estimation with high-dimensional fixed effects.
+\newblock \emph{The Stata Journal}, 20(1):95--115. doi:10.1177/1536867X20909691.
+
+\bibitem[FLINT Development Team(2026)]{FLINT2026}
+FLINT Development Team (2026).
+\newblock FLINT documentation: integer matrices (\texttt{fmpz\_mat}).
+\newblock Documentation accessed September 2026. \url{https://flintlib.org/doc/fmpz_mat.html}.
+
+\bibitem[Gaure(2013)]{Gaure2013}
+Gaure, S. (2013).
+\newblock OLS with multiple high dimensional category variables.
+\newblock \emph{Computational Statistics \& Data Analysis}, 66:8--18. doi:10.1016/j.csda.2013.03.024.
+
+\bibitem[Guimar\~aes(2016)]{Guimaraes2016group3hdfe}
+Guimar\~aes, P. (2016).
+\newblock \texttt{GROUP3HDFE}: Stata module to compute number of restrictions in a linear regression model with three high-dimensional fixed effects.
+\newblock Statistical Software Components S458181, Boston College Department of Economics. \url{https://ideas.repec.org/c/boc/bocode/s458181.html}.
+
+\bibitem[Guimar\~aes and Portugal(2010)]{GuimaraesPortugal2010}
+Guimar\~aes, P. and Portugal, P. (2010).
+\newblock A simple feasible procedure to fit models with high-dimensional fixed effects.
+\newblock \emph{The Stata Journal}, 10(4):628--649. doi:10.1177/1536867X1101000406.
+
+\bibitem[Parui(2025)]{Parui2025}
+Parui, S. (2025).
+\newblock On the incidence matrices of hypergraphs.
+\newblock \emph{Linear and Multilinear Algebra}, 73(17). doi:10.1080/03081087.2025.2568155.
+
+\bibitem[SymPy Development Team(2026)]{SymPyDomainMatrix2026}
+SymPy Development Team (2026).
+\newblock DomainMatrix documentation: exact dense and sparse matrix arithmetic.
+\newblock Documentation accessed September 2026. \url{https://docs.sympy.org/latest/modules/polys/domainmatrix.html}.
+
+\end{thebibliography}
+
+\end{document}

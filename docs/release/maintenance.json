@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "release_version": "0.6.3",
+  "previous_version": "0.6.2",
+  "checks": {
+    "frontend_api": {
+      "status": "reviewed",
+      "evidence": "Public calls/exports unchanged; compare immutable 0.6.2 baseline. No new model options.",
+      "description": "Public call signatures, exports, aliases, CLI/front-end validation and compatibility."
+    },
+    "backend_compute": {
+      "status": "changed",
+      "evidence": "Only NumPy _weighted_colsum fuses row reduction. QR/SVD, projections, GPU and solver tolerances unchanged; 52 targeted guards pass.",
+      "description": "Solver/compute/cache/backend contracts, numerical defaults and resource controls."
+    },
+    "errors": {
+      "status": "reviewed",
+      "evidence": "Runtime structured errors unchanged; developer acceptance/preflight tools fail closed without skipping tests.",
+      "description": "Structured exception classes, codes, stages, suggestions and public error boundaries."
+    },
+    "public_contract": {
+      "status": "reviewed",
+      "evidence": "Immutable 0.6.2 baseline retained; 0.6.3 snapshot and automated compatibility check.",
+      "description": "Public exports/signatures, result/config schemas and stable structured-error compatibility."
+    },
+    "skill": {
+      "status": "reviewed",
+      "evidence": "Skill runtime commands/defaults unchanged; standalone identity gates retained.",
+      "description": "Agent skill commands, examples, decision rules and newly exposed controls."
+    },
+    "linked_modules": {
+      "status": "reviewed",
+      "evidence": "Shared absorber local change only; no estimator changes or new runtime dependency.",
+      "description": "Cross-module imports, shared schemas, adapters, compatibility shims and downstream consumers."
+    },
+    "results_reporting": {
+      "status": "reviewed",
+      "evidence": "Result schemas and VCE formulas unchanged; local four-case numerical output comparison reports zero observed differences.",
+      "description": "Result fields, publication output, diagnostics metadata and serialization-facing schemas."
+    },
+    "config_defaults": {
+      "status": "reviewed",
+      "evidence": "Public model and solver defaults unchanged. New functional test launcher validates explicit thread cap.",
+      "description": "Config objects, defaults, deprecations, aliases and backwards-compatible behavior."
+    },
+    "cache_state": {
+      "status": "reviewed",
+      "evidence": "No cache implementation changes. New positive/zero-weight update and core invalidation guards.",
+      "description": "Reusable state/cache invalidation, fingerprints, lifecycle semantics and stale-state hazards."
+    },
+    "tests_validation": {
+      "status": "changed",
+      "evidence": "807 baseline pass, 99 added tests pass; full candidate and artifacts recorded in execution/evidence rather than inferred from this review.",
+      "description": "Regression tests, install smoke tests, golden/parity coverage and failure-path tests."
+    },
+    "performance": {
+      "status": "changed",
+      "evidence": "PERF-01 only; two fresh-process rounds per version/case, 14 hot timings, no profile in timed loops. performance-0.6.3.md.",
+      "description": "Representative benchmark/resource regressions for code paths materially changed by the release."
+    },
+    "docs_migration": {
+      "status": "changed",
+      "evidence": "Unified TODO, explicit execution acceptance, migration, environment and performance records added; historical manuscripts unmodified.",
+      "description": "README/architecture/changelog/migration/versioning documentation and user-visible examples."
+    },
+    "packaging_dependencies": {
+      "status": "changed",
+      "evidence": "No dependency changes; host candidate validation and independent installed tests separated from strict isolation and external matrix.",
+      "description": "Python/dependency matrix, optional extras, wheel/source contents and build metadata."
+    },
+    "external_validation": {
+      "status": "reviewed",
+      "evidence": "Reviewed but NOT PASSED: remote matrix, dependency floor, external reference claims and optional backends remain unexecuted. execution.json retains blockers.",
+      "description": "Licensed/reference-environment parity gates and explicitly deferred external certification."
+    },
+    "release_artifacts": {
+      "status": "changed",
+      "evidence": "Candidate structural verification and detached formal authorization separated. Formal offline requests rejected before output deletion. No real source commit/tag invented.",
+      "description": "Version consistency, source/wheel parity, hashes, clean install and reproducible bundle contents."
+    }
+  }
+}

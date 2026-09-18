@@ -1,0 +1,60 @@
+{
+  "nobs": 100000,
+  "raw_columns": 64,
+  "specifications": 30,
+  "baseline": {
+    "mode": "baseline",
+    "seconds": 1.268921320000004,
+    "maxrss_kb": 397452,
+    "cache": {
+      "fe_entries": 1,
+      "hits": 30,
+      "misses": 1,
+      "within_columns": 12,
+      "residualize_calls": 1,
+      "residualized_columns": 12,
+      "fe_specs": [
+        [
+          "firm",
+          "year"
+        ]
+      ]
+    }
+  },
+  "encoded": {
+    "mode": "encoded",
+    "seconds": 0.9587428169999725,
+    "maxrss_kb": 358156,
+    "cache": {
+      "fe_entries": 1,
+      "hits": 30,
+      "misses": 1,
+      "within_columns": 12,
+      "residualize_calls": 1,
+      "residualized_columns": 12,
+      "fe_specs": [
+        [
+          "firm",
+          "year"
+        ]
+      ],
+      "encoded_dataset": {
+        "nobs": 100000,
+        "column_count": 14,
+        "encoded_identifier_count": 2,
+        "numeric_cache_columns": 12,
+        "sample_mask_cache_entries": 0,
+        "encoded_bytes": 10575000,
+        "fingerprint": "6d50dbd4bdabc4a1c7893cb5f9bbac5d",
+        "source_type": "CSVSource"
+      },
+      "data_source": {
+        "source_type": "CSVSource",
+        "materializations": 1,
+        "loaded_column_count": 14
+      }
+    }
+  },
+  "speedup": 1.3235262861948935,
+  "peak_rss_reduction_fraction": 0.09886980063001316
+}

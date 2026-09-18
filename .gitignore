@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.nb[ci]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+/build/
+/dist/
+/.venv/
+/venv/
+*.aux
+*.log
+*.out
+*.toc
+/tests/independent_measurements.json

@@ -1,0 +1,21 @@
+{
+  "nobs": 120000,
+  "source_columns": 64,
+  "required_columns": 6,
+  "csv_size_mb": 143.781662940979,
+  "full": {
+    "seconds": 1.6946081709997998,
+    "dataframe_mb": 58.59375,
+    "peak_rss_mb": 221.63671875
+  },
+  "projected": {
+    "seconds": 0.8339377030001742,
+    "dataframe_mb": 5.4931640625,
+    "peak_rss_mb": 209.64453125,
+    "planned_batch_rows": 120000,
+    "required_column_count": 6
+  },
+  "speed_ratio_full_over_projected": 2.03205606954006,
+  "payload_reduction": 0.90625,
+  "peak_rss_reduction": 0.054107404078323595
+}

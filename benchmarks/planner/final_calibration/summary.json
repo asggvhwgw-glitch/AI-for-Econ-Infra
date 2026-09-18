@@ -1,0 +1,85 @@
+{
+  "all_statistical_parity": true,
+  "models": {
+    "iv_2fe_robust": {
+      "max_param_abs_diff": 0.0,
+      "max_stderr_abs_diff": 0.0,
+      "nobs_df_absorbed_match": true,
+      "pass": true
+    },
+    "iv_3fe_cluster2": {
+      "max_param_abs_diff": 0.0,
+      "max_stderr_abs_diff": 0.0,
+      "nobs_df_absorbed_match": true,
+      "pass": true
+    },
+    "ivppml_2fe_robust": {
+      "max_param_abs_diff": 0.0,
+      "max_stderr_abs_diff": 0.0,
+      "nobs_df_absorbed_match": true,
+      "pass": true
+    },
+    "ols_2fe_robust": {
+      "max_param_abs_diff": 0.0,
+      "max_stderr_abs_diff": 0.0,
+      "nobs_df_absorbed_match": true,
+      "pass": true
+    },
+    "ols_3fe_cluster2": {
+      "max_param_abs_diff": 0.0,
+      "max_stderr_abs_diff": 0.0,
+      "nobs_df_absorbed_match": true,
+      "pass": true
+    },
+    "ppml_2fe_robust": {
+      "max_param_abs_diff": 0.0,
+      "max_stderr_abs_diff": 0.0,
+      "nobs_df_absorbed_match": true,
+      "pass": true
+    },
+    "ppml_3fe_cluster2": {
+      "max_param_abs_diff": 0.0,
+      "max_stderr_abs_diff": 0.0,
+      "nobs_df_absorbed_match": true,
+      "pass": true
+    }
+  },
+  "performance": {
+    "iv_2fe_robust": {
+      "baseline_seconds": 0.04376770000089891,
+      "current_over_baseline": 0.7357054631467325,
+      "current_seconds": 0.03220013600002858
+    },
+    "iv_3fe_cluster2": {
+      "baseline_seconds": 0.08568600000035076,
+      "current_over_baseline": 0.9948672245225111,
+      "current_seconds": 0.08524619300078484
+    },
+    "ivppml_2fe_robust": {
+      "baseline_seconds": 0.055545872999573476,
+      "current_over_baseline": 0.8205102114325179,
+      "current_seconds": 0.04557595599908382
+    },
+    "ols_2fe_robust": {
+      "baseline_seconds": 0.008085076000497793,
+      "current_over_baseline": 0.9684220655107625,
+      "current_seconds": 0.007829766000213567
+    },
+    "ols_3fe_cluster2": {
+      "baseline_seconds": 0.018103055999745266,
+      "current_over_baseline": 0.9549370558891085,
+      "current_seconds": 0.017287278998992406
+    },
+    "ppml_2fe_robust": {
+      "baseline_seconds": 0.036918950001563644,
+      "current_over_baseline": 1.0175992816292407,
+      "current_seconds": 0.03756869700009702
+    },
+    "ppml_3fe_cluster2": {
+      "baseline_seconds": 0.09127937299854239,
+      "current_over_baseline": 0.9716191411734331,
+      "current_seconds": 0.08868878599969321
+    }
+  },
+  "thread_calibration_benchmark": "../thread_calibration.json"
+}

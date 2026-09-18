@@ -1,0 +1,105 @@
+[
+  {
+    "scenario": "hierarchy",
+    "engine": "replica",
+    "nobs_input": 240000,
+    "nobs_estimation": 240000,
+    "seconds": 1.5931979739998496,
+    "iterations": 6,
+    "peak_rss_mb_process": 367.51171875,
+    "coef": [
+      0.09915844799236521,
+      -0.07643011073495483,
+      0.06217214939712064
+    ],
+    "canonicalization": {
+      "requested": 4,
+      "effective": 4,
+      "changed": false
+    }
+  },
+  {
+    "scenario": "hierarchy",
+    "engine": "optimized",
+    "nobs_input": 240000,
+    "nobs_estimation": 240000,
+    "seconds": 0.7183947779999471,
+    "iterations": 6,
+    "peak_rss_mb_process": 367.51171875,
+    "coef": [
+      0.09915844799236519,
+      -0.07643011073495475,
+      0.062172149397120686
+    ],
+    "canonicalization": {
+      "requested": [
+        "fe0",
+        "fe1",
+        "fe2",
+        "fe3"
+      ],
+      "effective": [
+        "fe0",
+        "fe3"
+      ],
+      "requested_levels": [
+        10000,
+        12,
+        360,
+        7200
+      ],
+      "effective_levels": [
+        10000,
+        7200
+      ],
+      "dropped": [
+        {
+          "name": "fe1",
+          "spanned_by": "fe3",
+          "reason": "nested_intercept",
+          "proof_type": "exact_mapping"
+        },
+        {
+          "name": "fe2",
+          "spanned_by": "fe3",
+          "reason": "nested_intercept",
+          "proof_type": "exact_mapping"
+        }
+      ],
+      "refinement_edges": [
+        {
+          "coarse": "fe1",
+          "fine": "fe2",
+          "proof_type": "exact_mapping",
+          "exact": true
+        },
+        {
+          "coarse": "fe1",
+          "fine": "fe3",
+          "proof_type": "exact_mapping",
+          "exact": true
+        },
+        {
+          "coarse": "fe2",
+          "fine": "fe3",
+          "proof_type": "exact_mapping",
+          "exact": true
+        }
+      ],
+      "equivalences": [],
+      "passes": 1,
+      "diagnostics": {
+        "sample_size": 32768,
+        "candidate_pairs": 6,
+        "specification_proofs": 0,
+        "sample_rejections": 3,
+        "full_data_checks": 3
+      },
+      "changed": true
+    }
+  },
+  {
+    "speedup": 2.2177193136556554,
+    "max_abs_coef_diff": 8.326672684688674e-17
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "release": "0.4.5",
+  "scope": "same-container development A/B; not a hardware-independent or real-data claim",
+  "environment": {
+    "NUMBA_NUM_THREADS": 4,
+    "baseline": "0.4.4.4",
+    "candidate": "0.4.5"
+  },
+  "cases": [
+    {
+      "name": "high-zero 2FE PPML",
+      "n": 1000000,
+      "baseline_seconds": 3.095483493,
+      "candidate_seconds": 2.704773387,
+      "speedup": 1.144452066808213,
+      "numerical_parity": "coef/nobs/nsep/iterations identical in measured run"
+    },
+    {
+      "name": "high-zero 3FE PPML",
+      "n": 300000,
+      "baseline_seconds": 2.69728071,
+      "candidate_seconds": 2.518970646,
+      "speedup": 1.0707868764898658,
+      "numerical_parity": "coef/nobs/nsep/iterations identical in measured run"
+    }
+  ],
+  "interpretation": "Confirms no obvious performance regression in representative repaired paths. The 2026-09-12 user-supplied real-machine benchmark remains the authoritative external record and requires a post-fix rerun."
+}

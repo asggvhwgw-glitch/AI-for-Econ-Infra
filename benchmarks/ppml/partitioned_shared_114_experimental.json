@@ -1,0 +1,27 @@
+{
+  "blocks": 6,
+  "dense_build_seconds": 0.20127009800035012,
+  "dense_design_mib": 62.6220703125,
+  "dense_fit_seconds": 2.544357050999679,
+  "dense_total_seconds": 2.745627149000029,
+  "detected_shared_columns": 6,
+  "execution_reason": "exact_fe_partition_shared_columns",
+  "experimental": true,
+  "local_terms_per_block": 18,
+  "max_abs_coef_diff": 1.1449174941446927e-16,
+  "ncols": 114,
+  "nobs": 72000,
+  "partitioned_payload_mib": 13.18359375,
+  "payload_reduction_fraction": 0.7894736842105263,
+  "shared_terms": 6,
+  "speedup_dense_total_over_structured": 2.7343232924494556,
+  "storage_plan": {
+    "dense_bytes": 65664000,
+    "expected_passes": 2,
+    "reason": "repeated_operator_passes",
+    "representation": "block_dense",
+    "representation_bytes": 14400912,
+    "savings_fraction": 0.780687865497076
+  },
+  "structured_total_seconds": 1.0041340600000694
+}

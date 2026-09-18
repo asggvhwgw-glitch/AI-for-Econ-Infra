@@ -1,0 +1,152 @@
+{
+  "nobs": 150000,
+  "specifications_each": 30,
+  "encoded_build_seconds": 0.05734548100002712,
+  "patterns": {
+    "change_y": {
+      "dataframe_seconds": 0.9451509410000085,
+      "encoded_seconds": 0.36851849499998934,
+      "speedup": 2.56473136036235,
+      "dataframe_cache": {
+        "fe_entries": 1,
+        "hits": 29,
+        "misses": 1,
+        "within_columns": 9,
+        "residualize_calls": 6,
+        "residualized_columns": 9,
+        "fe_specs": [
+          [
+            "firm",
+            "year"
+          ]
+        ]
+      },
+      "encoded_cache": {
+        "fe_entries": 1,
+        "hits": 29,
+        "misses": 1,
+        "within_columns": 9,
+        "residualize_calls": 6,
+        "residualized_columns": 9,
+        "fe_specs": [
+          [
+            "firm",
+            "year"
+          ]
+        ],
+        "encoded_dataset": {
+          "nobs": 150000,
+          "column_count": 19,
+          "encoded_identifier_count": 3,
+          "numeric_cache_columns": 9,
+          "sample_mask_cache_entries": 0,
+          "encoded_bytes": 21356250,
+          "fingerprint": "46af5b7908b3deb0e0abeb99bb40f92a",
+          "source_type": null
+        }
+      }
+    },
+    "add_drop_x": {
+      "dataframe_seconds": 1.1848141130000158,
+      "encoded_seconds": 0.5168058749999886,
+      "speedup": 2.292570905855205,
+      "dataframe_cache": {
+        "fe_entries": 1,
+        "hits": 29,
+        "misses": 1,
+        "within_columns": 12,
+        "residualize_calls": 8,
+        "residualized_columns": 12,
+        "fe_specs": [
+          [
+            "firm",
+            "year"
+          ]
+        ]
+      },
+      "encoded_cache": {
+        "fe_entries": 1,
+        "hits": 29,
+        "misses": 1,
+        "within_columns": 12,
+        "residualize_calls": 8,
+        "residualized_columns": 12,
+        "fe_specs": [
+          [
+            "firm",
+            "year"
+          ]
+        ],
+        "encoded_dataset": {
+          "nobs": 150000,
+          "column_count": 19,
+          "encoded_identifier_count": 3,
+          "numeric_cache_columns": 15,
+          "sample_mask_cache_entries": 0,
+          "encoded_bytes": 21356250,
+          "fingerprint": "46af5b7908b3deb0e0abeb99bb40f92a",
+          "source_type": null
+        }
+      }
+    },
+    "change_fe": {
+      "dataframe_seconds": 0.7526836580000236,
+      "encoded_seconds": 0.32995513200000914,
+      "speedup": 2.281169725828064,
+      "dataframe_cache": {
+        "fe_entries": 3,
+        "hits": 27,
+        "misses": 3,
+        "within_columns": 12,
+        "residualize_calls": 3,
+        "residualized_columns": 12,
+        "fe_specs": [
+          [
+            "firm"
+          ],
+          [
+            "firm",
+            "year"
+          ],
+          [
+            "firm",
+            "year",
+            "industry"
+          ]
+        ]
+      },
+      "encoded_cache": {
+        "fe_entries": 3,
+        "hits": 27,
+        "misses": 3,
+        "within_columns": 12,
+        "residualize_calls": 3,
+        "residualized_columns": 12,
+        "fe_specs": [
+          [
+            "firm"
+          ],
+          [
+            "firm",
+            "year"
+          ],
+          [
+            "firm",
+            "year",
+            "industry"
+          ]
+        ],
+        "encoded_dataset": {
+          "nobs": 150000,
+          "column_count": 19,
+          "encoded_identifier_count": 3,
+          "numeric_cache_columns": 15,
+          "sample_mask_cache_entries": 0,
+          "encoded_bytes": 21356250,
+          "fingerprint": "46af5b7908b3deb0e0abeb99bb40f92a",
+          "source_type": null
+        }
+      }
+    }
+  }
+}

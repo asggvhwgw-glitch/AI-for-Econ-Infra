@@ -1,0 +1,21 @@
+{
+  "nobs": 100000,
+  "source_columns": 48,
+  "required_columns": 6,
+  "dta_size_mb": 36.650919914245605,
+  "full": {
+    "seconds": 0.13848887599988302,
+    "dataframe_mb": 36.62109375,
+    "peak_rss_mb": 238.1796875
+  },
+  "projected": {
+    "seconds": 0.09006196200016348,
+    "dataframe_mb": 4.57763671875,
+    "peak_rss_mb": 262.046875,
+    "planned_batch_rows": 100000,
+    "required_column_count": 6
+  },
+  "speed_ratio_full_over_projected": 1.5377066291275294,
+  "payload_reduction": 0.875,
+  "peak_rss_reduction": -0.10020664545544
+}

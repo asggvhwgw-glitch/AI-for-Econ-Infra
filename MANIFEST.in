@@ -1,0 +1,16 @@
+include README.md TODO.md CHANGELOG.md LICENSE NOTICE.md CONTRIBUTING.md SECURITY.md pyproject.toml MANIFEST.in .gitignore
+include compatibility/APPROVED_CHANGES.json
+graft compatibility/baselines
+graft econhdfe
+graft pyreghdfe
+graft tests
+graft scripts
+graft skills
+graft docs
+graft benchmarks
+graft validation
+graft .github
+prune .git
+prune build
+prune dist
+global-exclude __pycache__ *.py[cod] *.nbc *.nbi *.aux *.log *.out .coverage

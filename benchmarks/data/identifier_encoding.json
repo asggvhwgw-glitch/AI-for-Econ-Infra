@@ -1,0 +1,9 @@
+{
+  "nobs": 500000,
+  "firm_levels": 50000,
+  "year_levels": 20,
+  "raw_payload_mb": 59.604644775390625,
+  "encoded_payload_mb": 7.62939453125,
+  "payload_reduction": 0.872,
+  "encoding_seconds": 0.1236575059997449
+}

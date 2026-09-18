@@ -1,0 +1,152 @@
+{
+  "n": 300000,
+  "vce": "cluster(firm)",
+  "cache_validation": "signature",
+  "rounds": 4,
+  "cases": {
+    "many_y": {
+      "standalone_seconds": [
+        0.3405800990000216,
+        0.3170429729999569,
+        0.3371175240000639,
+        0.3143395260000261
+      ],
+      "session_seconds": [
+        0.27066142799992576,
+        0.253627143000017,
+        0.21753215199998976,
+        0.2219451130000607
+      ],
+      "standalone_median_s": 0.3270802485000104,
+      "session_median_s": 0.23778612800003884,
+      "speedup": 1.375522833274601,
+      "max_coef_diff": 0.0,
+      "cache": {
+        "fe_entries": 1,
+        "hits": 3,
+        "misses": 1,
+        "within_columns": 6,
+        "residualize_calls": 1,
+        "residualized_columns": 6,
+        "fe_specs": [
+          [
+            "firm",
+            "year"
+          ]
+        ]
+      }
+    },
+    "add_x": {
+      "standalone_seconds": [
+        0.4271363170000768,
+        0.4289889280000807,
+        0.42948350599999685,
+        0.420582219000039
+      ],
+      "session_seconds": [
+        0.23662059400010094,
+        0.21286005599995406,
+        0.23118451499999537,
+        0.20930952899993827
+      ],
+      "standalone_median_s": 0.42806262250007876,
+      "session_median_s": 0.22202228549997471,
+      "speedup": 1.9280164670682463,
+      "max_coef_diff": 0.0,
+      "cache": {
+        "fe_entries": 1,
+        "hits": 4,
+        "misses": 1,
+        "within_columns": 5,
+        "residualize_calls": 1,
+        "residualized_columns": 5,
+        "fe_specs": [
+          [
+            "firm",
+            "year"
+          ]
+        ]
+      }
+    },
+    "add_fe_once": {
+      "standalone_seconds": [
+        0.5784892579999905,
+        0.4989090829999441,
+        0.57093227200005,
+        0.45835878399998364
+      ],
+      "session_seconds": [
+        0.5096845199999507,
+        0.4002071290000231,
+        0.5232511450000175,
+        0.4299525959999073
+      ],
+      "standalone_median_s": 0.534920677499997,
+      "session_median_s": 0.469818557999929,
+      "speedup": 1.1385686418544538,
+      "max_coef_diff": 0.0,
+      "cache": {
+        "fe_entries": 3,
+        "hits": 3,
+        "misses": 3,
+        "within_columns": 12,
+        "residualize_calls": 3,
+        "residualized_columns": 12,
+        "fe_specs": [
+          [
+            "firm"
+          ],
+          [
+            "firm",
+            "year"
+          ],
+          [
+            "firm",
+            "year",
+            "industry"
+          ]
+        ]
+      }
+    },
+    "fe_toggle": {
+      "standalone_seconds": [
+        1.2053143710000995,
+        1.1351318009999432,
+        1.136470591000034,
+        1.1360604829999374
+      ],
+      "session_seconds": [
+        0.7162593150000021,
+        0.6186507370000527,
+        0.5879909259999749,
+        0.5815937060000351
+      ],
+      "standalone_median_s": 1.1362655369999857,
+      "session_median_s": 0.6033208315000138,
+      "speedup": 1.8833520701994186,
+      "max_coef_diff": 0.0,
+      "cache": {
+        "fe_entries": 3,
+        "hits": 8,
+        "misses": 3,
+        "within_columns": 12,
+        "residualize_calls": 3,
+        "residualized_columns": 12,
+        "fe_specs": [
+          [
+            "firm"
+          ],
+          [
+            "firm",
+            "year"
+          ],
+          [
+            "firm",
+            "year",
+            "industry"
+          ]
+        ]
+      }
+    }
+  }
+}

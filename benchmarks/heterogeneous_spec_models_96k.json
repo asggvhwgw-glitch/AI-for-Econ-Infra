@@ -1,0 +1,40 @@
+{
+  "nobs": 96000,
+  "groups": 12,
+  "local_slopes_per_group": 8,
+  "design": {
+    "ncols": 98,
+    "dense_payload_bytes": 75264000,
+    "planned_representation": "block_dense",
+    "planned_payload_bytes": 7680000
+  },
+  "ols": {
+    "dense_seconds": 1.1448496150005667,
+    "structured_seconds": 0.1089046609995421,
+    "speedup": 10.512402357190023,
+    "max_coef_abs_diff": 3.0531133177191805e-16
+  },
+  "linear_iv": {
+    "dense_seconds": 5.009261417000744,
+    "structured_seconds": 3.85061732900067,
+    "speedup": 1.3008982687720803,
+    "max_coef_abs_diff": 3.497202527569243e-15
+  },
+  "ppml": {
+    "dense_seconds": 2.3310464450005384,
+    "structured_seconds": 0.36328155499904824,
+    "speedup": 6.41663859043613,
+    "max_coef_abs_diff": 5.828670879282072e-16
+  },
+  "ivppml": {
+    "dense_seconds": 0.39612005700109876,
+    "structured_seconds": 0.19128133699996397,
+    "speedup": 2.0708766637341802,
+    "max_coef_abs_diff": 1.7069679003611782e-15
+  },
+  "notes": [
+    "Development microbenchmark; not a release performance claim.",
+    "PPML/IV-PPML use FE-only separation so shared coefficients remain on the certified structured path.",
+    "Linear-IV structured main solve retains established weak-IV diagnostics, which currently materialize role designs once."
+  ]
+}

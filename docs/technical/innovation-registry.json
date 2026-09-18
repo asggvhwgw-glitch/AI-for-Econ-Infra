@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "policy": {
+    "technical_innovation_definition": "A novelty claim requires an independently supported prior-art comparison; a theorem-backed framework can be registered without certifying originality.",
+    "required_artifacts": [
+      "formal_tex",
+      "compiled_pdf",
+      "implementation_map",
+      "tests",
+      "evidence"
+    ],
+    "engineering_exclusion": "Caching, parallelism, memory planning, backend selection, API design, compatibility reproduction, documentation, visualization, and release tooling are not technical innovations by themselves.",
+    "priority_status": "Registration records mathematical contributions and supporting artifacts, not proven novelty or publication priority."
+  },
+  "innovations": [
+    {
+      "id": "HDFE-EXACT-RANK-001",
+      "classification": "theorem_backed_framework",
+      "title": "Exact structural rank and absorbed degrees of freedom for arbitrary multiway categorical fixed effects",
+      "novelty_scope": "A general exact computational framework for characteristic-zero structural rank/absorbed DoF with arbitrary finite categorical FE partitions, including exact structural reductions, certified modular rank and exact fallback. The rank identity itself is not claimed as novel.",
+      "prior_art_boundary": "Connectivity formulas for two-way FE and conservative/pairwise rules for higher-way FE are established. The registered contribution is the package's exact arbitrary-G computational/certification framework, not the idea that FE DoF is a matrix-rank problem. Correctness review does not establish historical priority; see the 0.6.1 mathematical review.",
+      "manuscript": {
+        "tex": "docs/technical/hdfe/exact-multiway-dof/exact_multiway_hdfe_dof.tex",
+        "pdf": "docs/technical/hdfe/exact-multiway-dof/exact_multiway_hdfe_dof.pdf"
+      },
+      "implementation": [
+        "econhdfe/hdfe/rank.py",
+        "econhdfe/hdfe/dof.py"
+      ],
+      "tests": [
+        "tests/test_hdfe_exact_multiway.py",
+        "tests/test_mathematical_review.py"
+      ],
+      "evidence": [
+        "benchmarks/hdfe/exact_rank.json"
+      ],
+      "originality_status": "not_independently_established",
+      "mathematical_review": "docs/technical/mathematical-review-0.6.1.md",
+      "review_status": "proof_and_implementation_reviewed_under_stated_assumptions"
+    },
+    {
+      "id": "HDFE-NUMCORE-002",
+      "classification": "theorem_backed_application",
+      "title": "Exact residual-core reduction for arbitrary multiway categorical HDFE projection",
+      "novelty_scope": "An exact arbitrary-G hypergraph leaf-elimination theorem for weighted HDFE projection: recursively degree-one FE vertices force the residual on their unique observation to zero, so only the residual core must be solved and peeled rows can be reconstructed with exact zero residuals.",
+      "prior_art_boundary": "Degree-one pruning is known in two-way graph-based HDFE solvers and is not claimed as new. The registered contribution is the arbitrary-G categorical-hypergraph projection theorem, exact recursive reconstruction, and its topology/weight validity conditions. Correctness review does not establish historical priority; see the 0.6.1 mathematical review.",
+      "manuscript": {
+        "tex": "docs/technical/hdfe/numerical-residual-core/exact_multiway_hdfe_residual_core.tex",
+        "pdf": "docs/technical/hdfe/numerical-residual-core/exact_multiway_hdfe_residual_core.pdf"
+      },
+      "implementation": [
+        "econhdfe/hdfe/numerical_core.py",
+        "econhdfe/hdfe/absorber.py"
+      ],
+      "tests": [
+        "tests/test_hdfe_multiway_solver_opt.py",
+        "tests/test_hdfe_complex_fe_corpus.py",
+        "tests/test_mathematical_review.py"
+      ],
+      "evidence": [
+        "benchmarks/hdfe/solver_v044_integration.json"
+      ],
+      "originality_status": "not_independently_established",
+      "mathematical_review": "docs/technical/mathematical-review-0.6.1.md",
+      "review_status": "proof_and_implementation_reviewed_under_stated_assumptions"
+    },
+    {
+      "id": "HDFE-STRUCTURAL-DESIGN-003",
+      "classification": "theorem_backed_framework",
+      "title": "Exact partition-refinement canonicalization and structural design reduction for HDFE models",
+      "novelty_scope": "An HDFE-specific exact compilation framework that certifies partition refinement/functional dependencies, canonicalizes redundant FE partitions, constructs a transitive dependency DAG, and removes provably redundant factor or factor-slope columns before dense materialization while preserving the combined design column space.",
+      "prior_art_boundary": "Functional dependencies, partition refinement and dummy-variable collinearity are established concepts and are not claimed as new. The registered contribution is their exact HDFE design-space composition, recertification rules, interaction dependency closure and pre-materialization basis-reduction theorem. Correctness review does not establish historical priority; see the 0.6.1 mathematical review.",
+      "manuscript": {
+        "tex": "docs/technical/structural-design/exact_partition_refinement_hdfe_design.tex",
+        "pdf": "docs/technical/structural-design/exact_partition_refinement_hdfe_design.pdf"
+      },
+      "implementation": [
+        "econhdfe/hdfe/structure.py",
+        "econhdfe/design_structure.py"
+      ],
+      "tests": [
+        "tests/test_fe_canonicalization.py",
+        "tests/test_v073_structural_collinearity.py",
+        "tests/test_v074_dependency_omission.py",
+        "tests/test_mathematical_review.py"
+      ],
+      "evidence": [
+        "benchmarks/bench_structural_collinearity.py",
+        "benchmarks/bench_dependency_dag.py"
+      ],
+      "originality_status": "not_independently_established",
+      "mathematical_review": "docs/technical/mathematical-review-0.6.1.md",
+      "review_status": "proof_and_implementation_reviewed_under_stated_assumptions"
+    }
+  ]
+}

@@ -1,0 +1,224 @@
+{
+  "benchmark": "canonical-v0.4.10.2-vs-v0.5.0-same-host",
+  "date": "2026-09-13",
+  "environment": {
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "visible_cpus": 5,
+    "cgroup_effective_cores": 4,
+    "memory_gib": 4,
+    "python": "3.13.5",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "pandas": "2.2.3",
+    "blas_threads": 1,
+    "absorb_threads": 4,
+    "note": "Development-container evidence only; not a universal hardware claim."
+  },
+  "core_120k": {
+    "statistical_parity": {
+      "ols_2fe_robust": {
+        "nobs_equal": true,
+        "rank_equal": true,
+        "df_absorbed_equal": true,
+        "df_resid_equal": true,
+        "iterations_equal": true,
+        "dropped_singletons_equal": true,
+        "cluster_counts_equal": true,
+        "solver_equal": true,
+        "names_equal": true,
+        "max_abs_params_diff": 0.0,
+        "max_abs_stderr_diff": 0.0,
+        "max_abs_vcov_diff": 0.0
+      },
+      "ols_3fe_cluster2": {
+        "nobs_equal": true,
+        "rank_equal": true,
+        "df_absorbed_equal": true,
+        "df_resid_equal": true,
+        "iterations_equal": true,
+        "dropped_singletons_equal": true,
+        "cluster_counts_equal": true,
+        "solver_equal": true,
+        "names_equal": true,
+        "max_abs_params_diff": 0.0,
+        "max_abs_stderr_diff": 0.0,
+        "max_abs_vcov_diff": 0.0
+      },
+      "iv_2fe_robust": {
+        "nobs_equal": true,
+        "rank_equal": true,
+        "df_absorbed_equal": true,
+        "df_resid_equal": true,
+        "iterations_equal": true,
+        "dropped_singletons_equal": true,
+        "cluster_counts_equal": true,
+        "solver_equal": true,
+        "names_equal": true,
+        "max_abs_params_diff": 0.0,
+        "max_abs_stderr_diff": 0.0,
+        "max_abs_vcov_diff": 0.0
+      },
+      "iv_3fe_cluster2": {
+        "nobs_equal": true,
+        "rank_equal": true,
+        "df_absorbed_equal": true,
+        "df_resid_equal": true,
+        "iterations_equal": true,
+        "dropped_singletons_equal": true,
+        "cluster_counts_equal": true,
+        "solver_equal": true,
+        "names_equal": true,
+        "max_abs_params_diff": 0.0,
+        "max_abs_stderr_diff": 0.0,
+        "max_abs_vcov_diff": 0.0
+      },
+      "ppml_2fe_robust": {
+        "nobs_equal": true,
+        "df_absorbed_equal": true,
+        "iterations_equal": true,
+        "cluster_counts_equal": true,
+        "names_equal": true,
+        "converged_equal": true,
+        "n_separated_equal": true,
+        "max_abs_coef_diff": 0.0,
+        "max_abs_stderr_diff": 0.0,
+        "max_abs_vcov_diff": 0.0
+      },
+      "ppml_3fe_cluster2": {
+        "nobs_equal": true,
+        "df_absorbed_equal": true,
+        "iterations_equal": true,
+        "cluster_counts_equal": true,
+        "names_equal": true,
+        "converged_equal": true,
+        "n_separated_equal": true,
+        "max_abs_coef_diff": 0.0,
+        "max_abs_stderr_diff": 0.0,
+        "max_abs_vcov_diff": 0.0
+      },
+      "ivppml_2fe_robust": {
+        "nobs_equal": true,
+        "df_absorbed_equal": true,
+        "iterations_equal": true,
+        "cluster_counts_equal": true,
+        "names_equal": true,
+        "converged_equal": true,
+        "n_separated_equal": true,
+        "max_abs_coef_diff": 0.0,
+        "max_abs_stderr_diff": 0.0,
+        "max_abs_vcov_diff": 0.0
+      }
+    },
+    "timing_aggregate": {
+      "ols_2fe_robust": {
+        "v04102_median_of_round_medians_s": 0.03160946500020145,
+        "v050_median_of_round_medians_s": 0.031279204999918875,
+        "ratio_050_over_04102": 0.9895518636496862,
+        "round_ratios": [
+          0.9895518636496862,
+          1.0367970005142069,
+          0.9560198686130997
+        ]
+      },
+      "ols_3fe_cluster2": {
+        "v04102_median_of_round_medians_s": 0.10916766900027142,
+        "v050_median_of_round_medians_s": 0.11736334800025361,
+        "ratio_050_over_04102": 1.0750742328295186,
+        "round_ratios": [
+          1.0470916439507252,
+          1.1547367621700635,
+          1.123805258459701
+        ]
+      },
+      "iv_2fe_robust": {
+        "v04102_median_of_round_medians_s": 0.08196514800010846,
+        "v050_median_of_round_medians_s": 0.07898003600030279,
+        "ratio_050_over_04102": 0.9635807160404113,
+        "round_ratios": [
+          0.9635807160404113,
+          1.0194048027372293,
+          0.9032668314192105
+        ]
+      },
+      "iv_3fe_cluster2": {
+        "v04102_median_of_round_medians_s": 0.19600258699983897,
+        "v050_median_of_round_medians_s": 0.19909559000006993,
+        "ratio_050_over_04102": 1.0157804192667799,
+        "round_ratios": [
+          1.1769387194336165,
+          1.0431205482000732,
+          0.9819817257308521
+        ]
+      },
+      "ppml_2fe_robust": {
+        "v04102_median_of_round_medians_s": 0.12647269299986874,
+        "v050_median_of_round_medians_s": 0.12321360599980835,
+        "ratio_050_over_04102": 0.9742309037409066,
+        "round_ratios": [
+          0.9365638369780258,
+          1.1198493654278585,
+          0.969765643751598
+        ]
+      },
+      "ppml_3fe_cluster2": {
+        "v04102_median_of_round_medians_s": 0.5331872239999029,
+        "v050_median_of_round_medians_s": 0.5478215870002714,
+        "ratio_050_over_04102": 1.0274469498548433,
+        "round_ratios": [
+          0.8499807939889256,
+          1.0249786701797887,
+          1.1270755807131636
+        ]
+      },
+      "ivppml_2fe_robust": {
+        "v04102_median_of_round_medians_s": 0.1866076520000206,
+        "v050_median_of_round_medians_s": 0.19196152599988636,
+        "ratio_050_over_04102": 1.0286905383701261,
+        "round_ratios": [
+          1.1207984001592688,
+          0.957993866560956,
+          1.0286905383701261
+        ]
+      }
+    },
+    "interpretation": "Across three alternating timing rounds, all seven models preserve exact coefficient/SE/VCOV and applicable metadata parity. Median-of-round-median timing ratios are near parity; no systematic single-regression regression is established."
+  },
+  "complex_eventstudy_300k": {
+    "old_seconds": [
+      0.5593246729995371,
+      0.5176923789995271,
+      0.507978593000189,
+      0.5875352780003595,
+      0.6923026399999799
+    ],
+    "new_seconds": [
+      0.5855013620002865,
+      0.49148281999987375,
+      0.512959893999323,
+      0.5706174619999729,
+      0.6313686039993627
+    ],
+    "old_median_seconds": 0.5593246729995371,
+    "new_median_seconds": 0.5706174619999729,
+    "new_over_old_median_ratio": 1.0201900426453119,
+    "new_over_old_mean_ratio": 0.9745523014173147,
+    "statistical_metadata_parity": {
+      "nobs": true,
+      "dropped_singletons": true,
+      "rank": true,
+      "df_absorbed": true,
+      "df_resid": true,
+      "solver": true,
+      "iterations": true,
+      "requested_fe": true,
+      "effective_fe": true,
+      "active_names": true,
+      "user_omitted": true,
+      "automatic_omitted_count": true,
+      "max_abs_beta_error": true,
+      "beta_errors": true
+    },
+    "planner_fix": "v0.5.0 skips an unprofitable topology scan when structural pruning leaves a small, low-pass, memory-safe mixed dense design; wider/repeated/memory-pressured localized designs continue through the exact block planner.",
+    "interpretation": "The earlier ~31% apparent regression was a planner-setup artifact. After the narrow fast path, the clean 5x alternating-process median is within ~2% of v0.4.10.2 while preserving exact statistical and omission metadata."
+  }
+}

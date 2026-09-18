@@ -1,0 +1,41 @@
+{
+  "nobs": 120000,
+  "raw_columns": 64,
+  "specifications": 40,
+  "required_columns": 14,
+  "baseline_full_read_plus_session_seconds": 1.9635575670000094,
+  "encoded_projected_plus_session_seconds": 1.56567905899999,
+  "workflow_speedup": 1.2541252025521419,
+  "full_dataframe_bytes": 61440000,
+  "encoded_dataset_bytes": 12690000,
+  "payload_reduction_fraction": 0.79345703125,
+  "session_cache": {
+    "fe_entries": 1,
+    "hits": 40,
+    "misses": 1,
+    "within_columns": 12,
+    "residualize_calls": 1,
+    "residualized_columns": 12,
+    "fe_specs": [
+      [
+        "firm",
+        "year"
+      ]
+    ],
+    "encoded_dataset": {
+      "nobs": 120000,
+      "column_count": 14,
+      "encoded_identifier_count": 2,
+      "numeric_cache_columns": 12,
+      "sample_mask_cache_entries": 0,
+      "encoded_bytes": 12690000,
+      "fingerprint": "eefd92b5520d39acb5c51fed10562479",
+      "source_type": "CSVSource"
+    },
+    "data_source": {
+      "source_type": "CSVSource",
+      "materializations": 1,
+      "loaded_column_count": 14
+    }
+  }
+}
