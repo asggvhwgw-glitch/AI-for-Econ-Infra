@@ -18,6 +18,9 @@ The repository keeps runtime code, technical evidence, and release governance se
 
 - `docs/technical/README.md`: package-wide technical-innovation policy and source-of-truth registry.
 - `docs/technical/innovation-audit.md`: complete novelty audit distinguishing technical innovation from established methods and engineering.
+- `docs/technical/overview.md`: end-to-end technical contract from estimator semantics through execution planning to validation boundaries.
+- `docs/technical/performance-architecture.md`: where HDFE runtime is spent and why removing repeated work precedes kernel optimization.
+- `docs/technical/identified-fixed-effects.md`: fixed-effect recovery, realized-sample identification and normalization.
 - `docs/technical/hdfe/`: HDFE mathematics, formal innovation manuscripts, numerical solver design, implementation correspondence, and performance evidence.
 - `docs/technical/structural-design/`: formal manuscript for exact partition-refinement HDFE structural design reduction.
 - `docs/development/architecture.md`: economics-first package architecture, dependency boundaries and module ownership.

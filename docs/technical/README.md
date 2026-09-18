@@ -2,6 +2,12 @@
 
 This directory contains mathematical/algorithmic documentation, implementation notes and the package-wide technical-innovation audit.
 
+## Technical overview documents
+
+- [`overview.md`](overview.md) — end-to-end technical contract: estimator semantics, HDFE absorption, data layer, structural compilation, execution planning, repeated workflows, fixed-effect recovery and validation boundaries.
+- [`performance-architecture.md`](performance-architecture.md) — where large HDFE workloads actually spend time, and how repeated data preparation, design construction and projection work is removed before any kernel is optimized.
+- [`identified-fixed-effects.md`](identified-fixed-effects.md) — fixed-effect recovery: realized-sample identification, connected components, normalization, singleton/separation diagnostics and partial-block salvage.
+
 ## Innovation source of truth
 
 - `innovation-audit.md` — complete package audit distinguishing genuine technical innovation from established methods and engineering.
