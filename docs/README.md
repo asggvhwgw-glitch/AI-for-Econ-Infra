@@ -8,6 +8,27 @@
 
 The repository keeps runtime code, technical evidence, and release governance separate.
 
+## GitHub / technical entry points
+
+- [Technical overview](technical/overview.md) — end-to-end econometric and computational contract.
+- [Performance architecture](technical/performance-architecture.md) — large-data bottlenecks, modular performance strategy and benchmark interpretation.
+- [Identified categorical fixed effects](technical/identified-fixed-effects.md) — FE recovery, identification, normalization, singleton/separation diagnostics and block salvage.
+- [Technical documentation index](technical/README.md) — formal manuscripts, numerical notes and innovation policy.
+- [Economics-first architecture](development/architecture.md) — module ownership and dependency boundaries.
+- [Economic problem map](development/economic-module-map.md) — every runtime module mapped to the empirical/econometric problem it serves.
+- [Generated architecture map](development/architecture-map/architecture.md) — AST-backed code dependency view.
+- [Release validation status](development/test-status.md) — current regression, parity and release-gate evidence.
+
+## Documentation policy
+
+The repository distinguishes three kinds of claims:
+
+1. **econometric behavior** — what estimator/specification/inference is implemented;
+2. **engineering behavior** — how data, designs, FE projection, caching and execution are accelerated without changing the requested model;
+3. **technical originality** — only items registered in `technical/innovation-registry.json`, each backed by a formal manuscript and prior-art boundary.
+
+Repository-local benchmark timings are development evidence unless an external comparison explicitly states its package versions, hardware, workload and parity checks.
+
 ## User-facing entry points
 
 - `README.md`: package overview and public examples.

@@ -26,7 +26,7 @@ docs/technical/innovation-registry.json
 
 ## Full package classification
 
-The following table records the major computational and inferential subsystems reviewed in v0.4.6. A classification of `established_method` or `engineering_optimization` is intentional and must not be rewritten as an originality claim without a new literature audit and formal manuscript.
+The following table records the major computational and inferential subsystems reviewed through 0.6.3. A classification of `established_method` or `engineering_optimization` is intentional and must not be rewritten as an originality claim without a new literature audit and formal manuscript.
 
 | Subsystem / feature | Classification | Audit conclusion |
 | --- | --- | --- |
@@ -42,6 +42,9 @@ The following table records the major computational and inferential subsystems r
 | Positive-weight topology reuse / buffer reuse / memory budgets | engineering_optimization | Execution-state and memory-management improvements. |
 | Runtime thread planning, Numba/backend dispatch, GPU hooks | engineering_optimization | Hardware/runtime implementation. |
 | Repeated-specification sessions and FE/design caches | engineering_optimization | Reuse of validated transformations; no new statistical object. |
+| Data Layer projected I/O, compact encoding and persistent linear-workflow reuse | engineering_optimization | Reduces ingestion/representation/repeated-workflow cost while preserving estimator sample/specification semantics; not a new estimator or theorem. |
+| Unified Execution Planner and automatic runtime thread calibration | engineering_optimization | Separates exact candidate legality from memory/representation/thread policy; no new econometric or convergence result is claimed. |
+| Identified categorical FE recovery, normalization and component salvage | established_method / product integration | Recovers additive indicator FE from an estimated contribution with explicit rank/component/normalization semantics. The mathematical ingredients are established; the 0.6 integration is not registered as a new identification theorem. |
 | Post-absorption Gram collinearity detection | established_method / engineering | Standard numerical-rank/Gram-matrix logic used with explicit package semantics. |
 | Explicit omitted/reference-variable selection | product/API semantics | Important for event-study workflows but not a technical estimator contribution. |
 | Group + individual FE support | compatibility_implementation | Reproduces established reghdfe-style multi-membership semantics; current DoF treatment is explicitly conservative. |
